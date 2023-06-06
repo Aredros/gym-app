@@ -130,7 +130,7 @@ function App() {
   return (
     <div className="App">
       <h1>Gym list</h1>
-      <BrowserRouter basename="/my-exercises/">
+      <BrowserRouter basename="/exercises/">
         <Routes>
           <Route
             path="/"
