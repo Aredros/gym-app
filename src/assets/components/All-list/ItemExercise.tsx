@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPlus, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { EditItemExercise } from "./EditItemExercise";
+import { ItemImage } from "../All-list/ItemImage";
 
 interface ItemExerciteIT {
   addMyExercise: (id: string, weekday: string) => void;
@@ -92,12 +93,7 @@ export const ItemExercise = (props: ItemExerciteIT) => {
         })}
       </div>
       {exercise.linkImage && (
-        <div
-          className="Item-exercise__image"
-          onClick={() => window.open(exercise.linkImage)}
-        >
-          <img src={exercise.linkImage} alt={exercise.name} />
-        </div>
+        <ItemImage typeClass={"Item-exercise"} exerciseItem={exercise} />
       )}
       <dialog ref={editRef}>
         <EditItemExercise

@@ -7,6 +7,8 @@ import { AllExercises } from "./assets/components/AllExercises";
 import { MyExercises } from "./assets/components/MyExercises";
 import { v4 as uuidv4 } from "uuid";
 
+import addNotification from "react-push-notification";
+
 interface Exercise {
   id: string;
   isEditing: boolean;
@@ -127,9 +129,20 @@ function App() {
     setMyExercises(updatedMyExercises);
   };
 
+  //Show notification
+  const showMe = () => {
+    addNotification({
+      title: "Gym App",
+      message: "You have a new exercise!",
+      duration: 4000,
+      native: true,
+    });
+  };
+
   return (
     <div className="App">
       <h1>Gym list</h1>
+      <button onClick={showMe}>Show notification</button>
       <BrowserRouter basename="/gym-app/">
         <Routes>
           <Route
