@@ -1,37 +1,56 @@
-import React from "react";
-import { ItemMyExercise } from "./ItemMyExercise";
+import { ItemMyExercise } from "./RoutinePage/item-myExercise/ItemMyExercise";
 
 interface exerciseIT {
-  id: string;
-  MyExerciseID: string;
+  myExerciseID: string;
   weekday: string;
   isEditing: boolean;
   name: string;
   muscles: string[];
   linkImage: string;
+  objective: string; // Add the missing properties
+  routine: string;
+  type: string;
+  sets: ITset[];
+}
+interface ITset {
+  setCompleted: boolean;
+  reps: number;
+  weight: number;
+  distance: number;
+  time: number;
 }
 
 interface ItemMyExerciseIT {
   exercises: exerciseIT[];
   deleteMyExercise: (id: string) => void;
+  routine: any;
   day: string;
 }
 
 export const MyDailyDivider = (props: ItemMyExerciseIT) => {
-  const { day, exercises, deleteMyExercise } = props;
+  const { day, exercises, deleteMyExercise, routine } = props;
 
   return (
     <div>
-      <h3>{day}</h3>
+      <h3>{routine}</h3>
       <ul className="all-exercises-list">
         {exercises.map((exercise) => (
           <ItemMyExercise
-            key={exercise.id}
+            key={exercise.myExerciseID}
             exerciseItem={exercise}
-            deleteMyExercise={deleteMyExercise}
+            routineID={exercise.routine}
           />
         ))}
       </ul>
+      <div className="routine">
+        <h2>Routine Maker</h2>
+        <form
+          className="routine__form"
+          //onSubmit={handleSubmit}
+        >
+          <button type="submit"> Create</button>
+        </form>
+      </div>
     </div>
   );
 };

@@ -1,69 +1,89 @@
-import React from "react";
-import { Navigation } from "./Navigation";
-import { MyDailyDivider } from "./My-list/MyDailyDivider";
+import React, { useRef, useEffect, useState, useContext } from "react";
+import { RoutinePage } from "./My-list/RoutinePage/RoutinePage";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { RoutineForm } from "./My-list/RoutinePage/RoutineForm";
+import { RoutineContext } from "../../App";
 
-interface Exercise {
-  id: string;
-  MyExerciseID: string;
-  weekday: string;
-  isEditing: boolean;
-  name: string;
-  muscles: string[];
-  linkImage: string;
-}
+export const MyExercises = () => {
+  const {
+    exerciseList = [],
+    setExerciseList = () => {},
+    myRoutines = [],
+    setMyRoutines = () => {},
+  } = useContext(RoutineContext) || {}; //getting the colors from the context
 
-interface Days {
-  [key: string]: Exercise[];
-}
+  const location = useLocation(); // Get the current location
 
-interface MyExercisesProps {
-  deleteMyExercise: (id: string) => void;
-  myExercises: Exercise[];
-}
+  const routineRef = useRef<HTMLDialogElement | null>(null);
 
-export const MyExercises = (props: MyExercisesProps) => {
-  const { myExercises, deleteMyExercise } = props;
-
-  // function to sort todos tasks based on the day of the week assigned to the exercise
-  const sortExercisesByDay = (exercises: Exercise[]) => {
-    const days: Days = {
-      sunday: [],
-      monday: [],
-      tuesday: [],
-      wednesday: [],
-      thursday: [],
-      friday: [],
-      saturday: [],
-    };
-
-    exercises.forEach((exercise) => {
-      const day = exercise.weekday.toLowerCase();
-      days[day].push(exercise);
-    });
-    return days;
+  const openModal = () => {
+    routineRef.current?.showModal();
   };
 
-  //function to register a done day, saving the exercise, with repetitions and date
-  //LATER
+  const closeModal = () => {
+    routineRef.current?.close();
+  };
 
-  const sortedExercisesByDay = sortExercisesByDay(myExercises);
+  const [showParentElements, setShowParentElements] = useState<boolean>(false);
+  useEffect(() => {
+    // Determine whether to show the "New" button or not based on the current location
+    setShowParentElements(!location.pathname.includes("/routine/"));
+  }, [location]);
 
   return (
     <div>
-      <Navigation />
       <div className="main-exercises">
         <h2>My Exercises list</h2>
-        {Object.entries(sortedExercisesByDay).map(
-          ([day, exercises]) =>
-            exercises.length > 0 && (
-              <MyDailyDivider
-                key={day}
-                exercises={exercises}
-                day={day}
-                deleteMyExercise={deleteMyExercise}
-              />
-            )
+
+        {showParentElements && (
+          <>
+            <span className="button-with-text" onClick={openModal}>
+              <FontAwesomeIcon icon={faPlus} /> New
+            </span>
+
+            <dialog ref={routineRef}>
+              <RoutineForm closeModal={closeModal} />
+            </dialog>
+
+            {myRoutines.map((routine) => (
+              <Link
+                key={routine.routineID}
+                to={`/routine/${routine.routineName}`}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    margin: "10px 5px",
+                    backgroundColor: "#efc177",
+                    padding: "10px 10px",
+                    border: "1px solid #ccc",
+                    borderRadius: "5px",
+                  }}
+                >
+                  {routine.routineName}
+                </div>
+              </Link>
+            ))}
+          </>
         )}
+        <Routes>
+          {myRoutines.map((routine) => (
+            <Route
+              key={`routine-${routine.routineID}`}
+              path={`routine/${routine.routineName}/*`}
+              element={
+                <RoutinePage
+                  key={`routine-page-${routine.routineID}`}
+                  routineID={routine.routineID}
+                  exercises={routine.routineExercises}
+                />
+              }
+            />
+          ))}
+        </Routes>
       </div>
     </div>
   );

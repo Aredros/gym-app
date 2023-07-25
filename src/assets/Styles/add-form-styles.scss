@@ -1,0 +1,10 @@
+.exerciseAddForm {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  &__checkboxes {
+    flex-basis: 100%;
+    display: flex;
+  }
+}

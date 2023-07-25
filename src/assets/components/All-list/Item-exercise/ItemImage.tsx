@@ -1,7 +1,6 @@
 import React from "react";
 
 interface exerciseIT {
-  id: string;
   name: string;
   linkImage: string;
 }
