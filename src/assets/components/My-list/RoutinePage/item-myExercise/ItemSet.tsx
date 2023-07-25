@@ -164,6 +164,7 @@ export const ItemSet = (props: ItemSetIT) => {
           <div className="mesurer__compare-old-new">
             <input
               type="number"
+              inputMode="numeric"
               name="reps"
               id="reps"
               value={item.reps}
@@ -178,6 +179,7 @@ export const ItemSet = (props: ItemSetIT) => {
           <div className="mesurer__compare-old-new">
             <input
               type="number"
+              inputMode="numeric"
               name="time"
               id="time"
               value={item.time}
@@ -192,6 +194,7 @@ export const ItemSet = (props: ItemSetIT) => {
           <div className="mesurer__compare-old-new">
             <input
               type="number"
+              inputMode="numeric"
               name="distance"
               id="distance"
               value={item.distance}
@@ -206,6 +209,7 @@ export const ItemSet = (props: ItemSetIT) => {
           <div className="mesurer__compare-old-new">
             <input
               type="number"
+              inputMode="numeric"
               name="weight"
               id="weight"
               value={item.weight}
