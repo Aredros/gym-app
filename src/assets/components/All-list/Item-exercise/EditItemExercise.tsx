@@ -81,12 +81,22 @@ export const EditItemExercise = (props: AddExerciseIT) => {
         <p>Workout type</p>
         <div className="exerciseAddForm__checkboxes__area">
           {[
-            "Chest",
-            "Back",
-            "Arms",
-            "Legs",
+            "Neck",
+            "Traps",
+            "Traps-middle",
+            "Lowerback",
             "Shoulders",
-            "Abs",
+            "Chest",
+            "Biceps",
+            "Triceps",
+            "Forearms",
+            "Obliques",
+            "Abdominals",
+            "Laterals",
+            "Quads",
+            "Calves",
+            "Hamstrings",
+            "Glutes",
             "Core",
             "Cardio",
           ].map((muscle) => (

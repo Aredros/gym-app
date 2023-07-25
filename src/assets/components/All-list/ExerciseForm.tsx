@@ -74,34 +74,34 @@ export const ExerciseForm = (props: AddExerciseIT) => {
           <div className="exerciseAddForm__checkboxes__area__box">
             <input
               type="checkbox"
-              value="Chest"
+              value="Neck"
               onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
             />
-            <label>Chest</label>
+            <label>Neck</label>
           </div>
           <div className="exerciseAddForm__checkboxes__area__box">
             <input
               type="checkbox"
-              value="Back"
+              value="Traps"
               onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
             />
-            <label>Back</label>
+            <label>Traps</label>
           </div>
           <div className="exerciseAddForm__checkboxes__area__box">
             <input
               type="checkbox"
-              value="Arms"
+              value="Traps-middle"
               onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
             />
-            <label>Arms</label>
+            <label>Traps-middle</label>
           </div>
           <div className="exerciseAddForm__checkboxes__area__box">
             <input
               type="checkbox"
-              value="Legs"
+              value="Lowerback"
               onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
             />
-            <label>Legs</label>
+            <label>Lowerback</label>
           </div>
           <div className="exerciseAddForm__checkboxes__area__box">
             <input
@@ -114,10 +114,90 @@ export const ExerciseForm = (props: AddExerciseIT) => {
           <div className="exerciseAddForm__checkboxes__area__box">
             <input
               type="checkbox"
-              value="Abs"
+              value="Chest"
               onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
             />
-            <label>Abs</label>
+            <label>Chest</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Biceps"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Biceps</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Triceps"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Triceps</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Forearms"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Forearms</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Obliques"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Obliques</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Abdominals"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Abdominals</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Laterals"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Laterals</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Quads"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Quads -legs</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Calves"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Calves</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Hamstrings"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Hamstrings</label>
+          </div>
+          <div className="exerciseAddForm__checkboxes__area__box">
+            <input
+              type="checkbox"
+              value="Glutes"
+              onChange={(e) => addTypeToArray(e.target.value, e.target.checked)}
+            />
+            <label>Glutes</label>
           </div>
           <div className="exerciseAddForm__checkboxes__area__box">
             <input
