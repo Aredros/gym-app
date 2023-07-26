@@ -3,8 +3,20 @@
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: center;
+  input {
+    padding: 8px 10px;
+  }
   &__checkboxes {
-    flex-basis: 100%;
+    margin-bottom: 10px;
+    &__area {
+      column-count: 2;
+      text-align: initial;
+    }
+  }
+  &__buttons {
+    margin-top: 15px;
     display: flex;
+    justify-content: center;
+    gap: 10px;
   }
 }

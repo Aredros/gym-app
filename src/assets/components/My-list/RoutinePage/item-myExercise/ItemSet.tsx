@@ -1,5 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { RoutineContext } from "../../../../../App";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock, faWeightHanging } from "@fortawesome/free-solid-svg-icons";
 
 interface ITset {
   setCompleted: boolean;
@@ -158,7 +160,7 @@ export const ItemSet = (props: ItemSetIT) => {
         checked={item.setCompleted}
         onChange={handleCheckboxChange} // Add onChange handler to handle checkbox changes
       />
-      <h4>SET:{index + 1}</h4>
+
       {(type === "KDT" || type === "RPT" || type === "KRP") && (
         <div className="mesurer">
           <div className="mesurer__compare-old-new">
@@ -186,7 +188,9 @@ export const ItemSet = (props: ItemSetIT) => {
               onChange={(e) => handleTime(parseInt(e.target.value, 10))}
             />
           </div>
-          <label htmlFor="time">Time</label>
+          <label htmlFor="time">
+            <FontAwesomeIcon icon={faClock} />
+          </label>
         </div>
       )}
       {type === "Cardio" && (
@@ -216,7 +220,9 @@ export const ItemSet = (props: ItemSetIT) => {
               onChange={(e) => handleWeights(parseInt(e.target.value, 10))}
             />
           </div>
-          <label htmlFor="weight">Kgs</label>
+          <label htmlFor="weight">
+            <FontAwesomeIcon icon={faWeightHanging} />
+          </label>
         </div>
       )}
     </div>

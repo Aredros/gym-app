@@ -104,37 +104,40 @@ export const ItemExercise = (props: ItemExerciteIT) => {
   return (
     <li className="Item-exercise" key={exercise.id}>
       <div className="Item-exercise__area1">
-        <h2>{exercise.name}</h2>
-        <form onSubmit={handleSubmit}>
-          <select
-            name="routineChooser"
-            id="routineChooser"
-            onChange={(e) => setRoutineToChoose(e.target.value)}
-          >
-            <option value="" disabled>
-              choose routine
-            </option>
-            {myRoutines.map((chosenRoutine) => {
-              return (
-                <option
-                  key={chosenRoutine.routineID}
-                  value={chosenRoutine.routineID}
-                >
-                  {chosenRoutine.routineName}
-                </option>
-              );
-            })}
-          </select>
-          <button type="submit">
-            {" "}
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-        </form>
-        <StartEditingItemExerciseButton
-          openModal={openModal}
-          exercise={exercise}
-        />
-        <DeleteItemExerciseButton exercise={exercise} />
+        <div className="Item-exercise__area1__titleNbuttons">
+          <h2>{exercise.name}</h2>
+          <div className="Item-exercise__area1__titleNbuttons__buttons">
+            <StartEditingItemExerciseButton
+              openModal={openModal}
+              exercise={exercise}
+            />
+            <DeleteItemExerciseButton exercise={exercise} />
+          </div>
+        </div>
+        <div className="Item-exercise__area1__routineChooser">
+          <form onSubmit={handleSubmit}>
+            <select
+              name="routineChooser"
+              id="routineChooser"
+              onChange={(e) => setRoutineToChoose(e.target.value)}
+            >
+              <option value="" disabled>
+                choose routine
+              </option>
+              {myRoutines.map((chosenRoutine) => {
+                return (
+                  <option
+                    key={chosenRoutine.routineID}
+                    value={chosenRoutine.routineID}
+                  >
+                    {chosenRoutine.routineName}
+                  </option>
+                );
+              })}
+            </select>
+            <button type="submit"> Add to routine</button>
+          </form>
+        </div>
       </div>
       <div className="Item-exercise__area2">
         {exercise.muscles &&

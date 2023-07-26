@@ -26,7 +26,6 @@ export const DeleteRoutineButton = (props: exerciseIT) => {
 
   return (
     <button onClick={() => deleteMyRoutine && deleteMyRoutine(routineID)}>
-      <FontAwesomeIcon icon={faTrash} />
       Delete Routine
     </button>
   );

@@ -34,10 +34,7 @@ export const LinkToPage = (props: ITroutineSets) => {
         key={`exercise-details-${exerciseItem.myExerciseID}`}
         to={`/myexerciseDetails/${exerciseItem.myExerciseID}`}
       >
-        <FontAwesomeIcon
-          icon={faDatabase}
-          className="item-my-exercise__area1__textNimage__icon"
-        />
+        <FontAwesomeIcon icon={faDatabase} />
       </Link>
     </>
   );

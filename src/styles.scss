@@ -1,4 +1,9 @@
 #root {
+  padding: 2rem 1rem;
+}
+
+#root,
+body {
   background: rgb(45, 44, 44);
 }
 
@@ -35,7 +40,7 @@
 .main-exercises {
   background: #fff;
   color: black;
-  padding: 10px;
+  padding: 10px 2px;
   border-radius: 0 8px 8px 8px;
   -webkit-border-radius: 0 8px 8px 8px;
   -moz-border-radius: 0 8px 8px 8px;
@@ -69,7 +74,7 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
-  padding: 5px 30px;
+  padding: 5px 20px;
   background: white;
   list-style: none;
   color: black;
@@ -83,24 +88,38 @@
     align-items: center;
   }
   &__area1 {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-wrap: wrap;
-    h2 {
-      margin: 0;
-      font-size: 1.2em;
-    }
-    form {
+    &__titleNbuttons {
       display: flex;
-      gap: 25px;
-      button {
-        padding: 2px 5px;
-        background: rgb(29, 28, 28);
+      justify-content: space-between;
+      align-items: baseline;
+      &__buttons {
+        display: flex;
+        gap: 13px;
+        svg {
+          height: 1.3em;
+        }
       }
-      select {
-        background: rgb(51, 49, 49);
-        color: white;
+      h2 {
+        margin: 0;
+        font-size: 1.7em;
+      }
+    }
+    &__routineChooser {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      form {
+        display: flex;
+        gap: 10px;
+        button {
+          padding: 2px 8px;
+          background: rgb(29, 28, 28);
+          font-size: 1em;
+          border-radius: 8px;
+        }
+        select {
+          background: rgb(51, 49, 49);
+          color: white;
+        }
       }
     }
   }
@@ -147,7 +166,7 @@
     display: flex;
     background: bisque;
     gap: 10px;
-    min-width: 3rem;
+    min-width: 15rem;
     justify-content: space-between;
     align-items: center;
     padding: 25px 15px 20px 15px;
@@ -201,7 +220,7 @@
     &__textNimage {
       display: flex;
       align-items: center;
-      padding-left: 2rem;
+      padding-left: 0.3rem;
       padding-right: 2rem;
     }
   }
@@ -237,6 +256,8 @@
         gap: 3px;
         button {
           padding: 0.4em 0.9em;
+          color: white;
+          background: #1e1d1d;
         }
       }
     }
@@ -258,12 +279,18 @@
           max-width: 30px;
           height: 22px;
         }
+        input[type="checkbox"] {
+          width: 18px;
+        }
         .mesurer {
           display: flex;
-          align-items: end;
-
+          align-items: center;
+          gap: 3px;
           label {
-            font-size: 12px;
+            font-size: 13px;
+          }
+          svg {
+            height: 16px;
           }
         }
       }
@@ -313,6 +340,10 @@
 }
 
 @media screen and (min-width: 780px) {
+  .main-exercises {
+    padding: 10px 25px;
+  }
+
   .item-my-exercise {
     margin: 0px 2rem 10px;
     &__area1 {

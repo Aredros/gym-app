@@ -95,7 +95,6 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
           )}
           <h2>
             {exerciseItem.name} {completedCounter}/{allSets}{" "}
-            <LinkToPage exerciseItem={exerciseItem} />
           </h2>
         </div>
         <div className="item-my-exercise__area1__muscles">
@@ -121,7 +120,7 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
             exerciseItem={exerciseItem}
             routineID={routineID}
           />
-
+          <LinkToPage exerciseItem={exerciseItem} />
           <FontAwesomeIcon
             icon={faEllipsisVertical}
             onClick={() => setOptionState(!optionState)}
@@ -131,7 +130,6 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
       <form className="item-my-exercise__area2">
         <div className="item-my-exercise__area2__form__part1">
           <div className="item-my-exercise__area2__form__part1__setButtons">
-            <label htmlFor="workout-type">Type</label>
             <select
               name="workout-type"
               id="workout-type"
@@ -146,8 +144,6 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
             </select>
           </div>
           <div className="item-my-exercise__area2__form__part1__setButtons">
-            <label htmlFor="sets">Sets</label>
-
             <CreateSetButton
               exerciseID={exerciseItem.myExerciseID}
               routineID={routineID}
