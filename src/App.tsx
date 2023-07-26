@@ -82,7 +82,7 @@ function App() {
                 myExerciseID: "0011",
                 objective: "10 sets 5reps 5kilos",
                 routine: "Default-routine",
-                type: "",
+                type: "RPT",
                 sets: [
                   {
                     setCompleted: false,

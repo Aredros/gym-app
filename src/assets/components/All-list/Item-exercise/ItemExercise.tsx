@@ -58,7 +58,7 @@ export const ItemExercise = (props: ItemExerciteIT) => {
         myExerciseID: uuidv4(), // Add the 'myExerciseID' property
         objective: "",
         routine: selectedRoutineID, // Add the 'routine' property
-        type: "",
+        type: "Cardio",
         sets: [
           {
             setCompleted: false,
