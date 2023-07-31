@@ -24,7 +24,7 @@ export const AllExercises = () => {
       <div className="main-exercises">
         <h2>All Exercises</h2>
         <span className="button-with-text" onClick={openModal}>
-          <FontAwesomeIcon icon={faPlus} /> New
+          <FontAwesomeIcon icon={faPlus} /> New Exercise
         </span>
         <dialog ref={modalRef}>
           <ExerciseForm closeModal={closeModal} />

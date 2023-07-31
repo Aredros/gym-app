@@ -35,12 +35,12 @@ export const MyExercises = () => {
   return (
     <div>
       <div className="main-exercises">
-        <h2>My Exercises list</h2>
+        <h2>My Routines</h2>
 
         {showParentElements && (
           <>
             <span className="button-with-text" onClick={openModal}>
-              <FontAwesomeIcon icon={faPlus} /> New
+              <FontAwesomeIcon icon={faPlus} /> New Routine
             </span>
 
             <dialog ref={routineRef}>
