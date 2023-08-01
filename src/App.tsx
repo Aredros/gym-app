@@ -75,6 +75,7 @@ function App() {
             isEditing: false,
             routineName: "Default-routine",
             routineImage: "",
+            routineCompletion: [100, 50, 0],
             routineExercises: [
               {
                 isEditing: false,
@@ -142,11 +143,8 @@ function App() {
   //   },
   // ]);
 
-
-
   //get all exercises stored into the localStorage
   useEffect(() => {
-
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -180,7 +178,8 @@ function App() {
       value={{ exerciseList, setExerciseList, myRoutines, setMyRoutines }}
     >
       <div className="App">
-      {loading ?(<div className="loading">
+        {loading ? (
+          <div className="loading">
             <div className="loading-box">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -203,25 +202,28 @@ function App() {
               </svg>
               <img className="django-loading" src={django} alt="django" />
             </div>
-          </div>) :(
-            <>
-        <PersonalLinks />
-        <h1>Gym list</h1>
-
-        <BrowserRouter basename="/gym-app/">
-          <div>
-            <Navigation />
-
-            <Routes>
-              <Route path="*" element={<MyExercises />} />
-              <Route path="/all-exercises/" element={<AllExercises />} />
-              <Route
-                path={`/myexerciseDetails/:myExerciseID`}
-                element={<PageExerciseDetails />}
-              />
-            </Routes>
           </div>
-        </BrowserRouter></>  )}
+        ) : (
+          <>
+            <PersonalLinks />
+            <h1>Gym list</h1>
+
+            <BrowserRouter basename="/gym-app/">
+              <div>
+                <Navigation />
+
+                <Routes>
+                  <Route path="*" element={<MyExercises />} />
+                  <Route path="/all-exercises/" element={<AllExercises />} />
+                  <Route
+                    path={`/myexerciseDetails/:myExerciseID`}
+                    element={<PageExerciseDetails />}
+                  />
+                </Routes>
+              </div>
+            </BrowserRouter>
+          </>
+        )}
       </div>
     </RoutineContext.Provider>
   );

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisVertical, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { ItemImage } from "../../../All-list/Item-exercise/ItemImage";
 import { ItemSet } from "./ItemSet";
 import { CreateSetButton } from "./CreateSetButton";
@@ -38,12 +38,17 @@ interface ItemMyExerciseIT {
 export const ItemMyExercise = (props: ItemMyExerciseIT) => {
   const { myRoutines = [], setMyRoutines = () => {} } =
     useContext(RoutineContext) || {}; //getting the colors from the context
-  //
 
   const { exerciseItem, routineID } = props;
 
   //state to show or dissapear the settings that has options like Delete
   const [optionState, setOptionState] = React.useState<boolean>(false);
+  //
+  const [editObjective, setEditObjective] = useState(false);
+  //
+  const [objectiveTextState, setObjectiveTextState] = useState(
+    exerciseItem.objective
+  );
 
   const allSets = exerciseItem.sets.length;
 
@@ -74,6 +79,29 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
       return updatedRoutines;
     });
   };
+
+  const handleObjective = () => {
+    // Update the type in the corresponding exerciseItem from myRoutines
+    setMyRoutines((prevRoutines) => {
+      const updatedRoutines = prevRoutines.map((routine) => {
+        if (routine.routineID === routineID) {
+          const updatedExercises = routine.routineExercises.map((exercise) => {
+            if (exercise.myExerciseID === exerciseItem.myExerciseID) {
+              return { ...exercise, objective: objectiveTextState };
+            }
+            return exercise;
+          });
+          return { ...routine, routineExercises: updatedExercises };
+        }
+        return routine;
+      });
+      return updatedRoutines;
+    });
+    setEditObjective(false);
+  };
+
+  //Get previous objective so it can be edited
+  const prevObj = exerciseItem.objective;
 
   useEffect(() => {
     // Update localStorage whenever routines change
@@ -128,6 +156,40 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
         </div>
       </div>
       <form className="item-my-exercise__area2">
+        <div className="item-my-exercise__area2__form__part0">
+          {editObjective ? (
+            <>
+              <input
+                type="text"
+                value={objectiveTextState}
+                onChange={(e) => setObjectiveTextState(e.target.value)}
+              />
+              <FontAwesomeIcon
+                icon={faEdit}
+                onClick={() => handleObjective()}
+              />
+            </>
+          ) : exerciseItem.objective !== "" ? (
+            <>
+              {" "}
+              <p>
+                <b>Objective:</b> {exerciseItem.objective}{" "}
+              </p>{" "}
+              <FontAwesomeIcon
+                icon={faEdit}
+                onClick={() => setEditObjective(!editObjective)}
+              />
+            </>
+          ) : (
+            <p>
+              <b>Objective:</b> No objective set...{" "}
+              <FontAwesomeIcon
+                icon={faEdit}
+                onClick={() => setEditObjective(!editObjective)}
+              />
+            </p>
+          )}
+        </div>
         <div className="item-my-exercise__area2__form__part1">
           <div className="item-my-exercise__area2__form__part1__setButtons">
             <select

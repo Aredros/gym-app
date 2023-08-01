@@ -1,8 +1,13 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
+import { RoutineContext } from "../../../../App";
 
-interface ITroutineSets {
-  exerciseInfo?: IExerciseInfo[];
+interface Routines {
+  routineID: string;
+  isEditing: boolean;
+  routineName: string;
+  routineImage: string;
+  routineExercises: IExerciseInfo[];
 }
 
 interface IExerciseInfo {
@@ -26,15 +31,33 @@ interface ITset {
 }
 
 export const PageExerciseDetails = () => {
+  const {
+    exerciseList = [],
+    myRoutines = [] as Routines[],
+    setMyRoutines = () => {},
+  } = useContext(RoutineContext) || {}; //getting the colors from the context
+
   // Access the URL parameter using useParams hook
   const { myExerciseID } = useParams();
 
+  // Initialize ExerciseFromRoutine variable to undefined
+  let ExerciseFromRoutine: IExerciseInfo | undefined;
+
+  // Iterate through all routines and exercises to find the matching exercise
+  myRoutines.forEach((routine) => {
+    routine.routineExercises.forEach((exercise) => {
+      if (exercise.myExerciseID === myExerciseID) {
+        ExerciseFromRoutine = exercise;
+      }
+    });
+  });
+
   return (
     <>
-      <div className="card">
-        <p>ID: {myExerciseID}</p>
-
-        {/* Render other exercise details based on "data" */}
+      <div>
+        <div className="main-exercises">
+          {ExerciseFromRoutine && <h2>{ExerciseFromRoutine.name}</h2>}
+        </div>
       </div>
     </>
   );
