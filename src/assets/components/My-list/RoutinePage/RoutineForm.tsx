@@ -38,6 +38,7 @@ export const RoutineForm = (props: AddExerciseIT) => {
       isEditing: false,
       routineName: routineName,
       routineImage: routineImage,
+      routineCompletion: [],
       routineExercises: [], // Add routineExercises as an empty array
     };
     setMyRoutines([...myRoutines, newRoutine]);
