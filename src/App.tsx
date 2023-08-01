@@ -9,6 +9,7 @@ import { AllExercises } from "./assets/components/AllExercises";
 import { MyExercises } from "./assets/components/MyExercises";
 import PersonalLinks from "./assets/components/Navigation/PersonalLinks";
 import { PageExerciseDetails } from "./assets/components/My-list/Page-Exercise-Details/PageExerciseDetails";
+import { RoutinePage } from "./assets/components/My-list/RoutinePage/RoutinePage";
 
 // import addNotification from "react-push-notification";
 
@@ -24,6 +25,7 @@ interface Routines {
   isEditing: boolean;
   routineName: string;
   routineImage: string;
+  routineCompletion: number[];
   routineExercises: ITroutineSets[];
 }
 interface ITroutineSets {
@@ -150,8 +152,6 @@ function App() {
       setLoading(false);
     }, 4000);
 
-    //empty array and local storage
-    //localStorage.clear();
     const StoredIntoLocalExerciseList = localStorage.getItem("exerciseList");
     if (StoredIntoLocalExerciseList) {
       setExerciseList(JSON.parse(StoredIntoLocalExerciseList));
@@ -161,6 +161,9 @@ function App() {
     if (MyStoredIntoLocalRoutines) {
       setMyRoutines(JSON.parse(MyStoredIntoLocalRoutines));
     }
+
+    //empty array and local storage
+    localStorage.clear();
   }, []);
 
   // Save updated exerciseList to localStorage
@@ -218,6 +221,10 @@ function App() {
                   <Route
                     path={`/myexerciseDetails/:myExerciseID`}
                     element={<PageExerciseDetails />}
+                  />
+                  <Route
+                    path={`/routine/:routineID`}
+                    element={<RoutinePage />}
                   />
                 </Routes>
               </div>

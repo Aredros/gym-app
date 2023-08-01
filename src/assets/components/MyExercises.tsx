@@ -46,44 +46,29 @@ export const MyExercises = () => {
             <dialog ref={routineRef}>
               <RoutineForm closeModal={closeModal} />
             </dialog>
-
-            {myRoutines.map((routine) => (
-              <Link
-                key={routine.routineID}
-                to={`/routine/${routine.routineName}`}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    margin: "10px 5px",
-                    backgroundColor: "#efc177",
-                    padding: "10px 10px",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                  }}
-                >
-                  {routine.routineName}
-                </div>
-              </Link>
-            ))}
           </>
         )}
-        <Routes>
-          {myRoutines.map((routine) => (
-            <Route
-              key={`routine-${routine.routineID}`}
-              path={`routine/${routine.routineName}/*`}
-              element={
-                <RoutinePage
-                  key={`routine-page-${routine.routineID}`}
-                  routineID={routine.routineID}
-                  exercises={routine.routineExercises}
-                />
-              }
-            />
-          ))}
-        </Routes>
+
+        {myRoutines.map((routine) => (
+          <Link
+            key={`routine-${routine.routineName}`}
+            to={`routine/${routine.routineID}`}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                margin: "10px 5px",
+                backgroundColor: "#efc177",
+                padding: "10px 10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+              }}
+            >
+              {routine.routineName}
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );
