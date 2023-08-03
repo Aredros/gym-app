@@ -56,6 +56,9 @@ export const RoutinePage = () => {
 
   const allRoutineCompletion = TheRoutine?.routineCompletion;
 
+  //GET Current URL for going backwards button
+  const url = window.location.href;
+
   return (
     <div>
       <div className="main-exercises">

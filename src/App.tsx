@@ -2,9 +2,16 @@ import React, { useEffect, useState, createContext } from "react";
 import django from "./Djangocircle.png";
 import "./App.css";
 import "./styles.scss";
+import "./assets/Styles/Page-exercise-details.scss";
 import "./assets/Styles/add-form-styles.scss";
 import { Navigation } from "./assets/components/Navigation";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter,
+  HashRouter,
+  Routes,
+  Route,
+  Link,
+} from "react-router-dom";
 import { AllExercises } from "./assets/components/AllExercises";
 import { MyExercises } from "./assets/components/MyExercises";
 import PersonalLinks from "./assets/components/Navigation/PersonalLinks";
@@ -216,7 +223,7 @@ function App() {
                 <Navigation />
 
                 <Routes>
-                  <Route path="*" element={<MyExercises />} />
+                  <Route path="/" element={<MyExercises />} />
                   <Route path="/all-exercises/" element={<AllExercises />} />
                   <Route
                     path={`/myexerciseDetails/:myExerciseID`}

@@ -1,0 +1,49 @@
+.PageExerciseDetails-header {
+  display: flex;
+  padding-right: 30px;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  svg {
+    height: 25px;
+  }
+}
+
+.page-exercise {
+  margin-bottom: 25px;
+  display: flex;
+  flex-direction: column;
+  &__area1 {
+    display: flex;
+  }
+  &__area2 {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    &__objective {
+      display: flex;
+      justify-content: center;
+      align-content: baseline;
+      p {
+        margin: 0 10px;
+      }
+      svg {
+        align-self: center;
+      }
+    }
+    &__sets {
+      display: flex;
+      gap: 10px;
+      flex-direction: column;
+      &__controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        &__moreOrLess {
+          display: flex;
+          gap: 5px;
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,7 @@
 #root {
   padding: 0;
+  margin: 0;
+  width: 100vw;
 }
 
 #root,
@@ -9,6 +11,7 @@ body {
 
 .App {
   max-width: 330px;
+  margin: auto;
   h1 {
     margin-top: 0px;
   }
@@ -21,7 +24,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 95vh;
-  width: 97vw;
+  width: inherit;
   &-box {
     position: relative;
     animation: shrinkAndDisappear 1s linear 3s forwards;

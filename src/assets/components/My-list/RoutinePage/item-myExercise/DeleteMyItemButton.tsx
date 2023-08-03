@@ -5,13 +5,16 @@ import { RoutineContext } from "../../../../../App";
 
 interface exerciseIT {
   routineID: string;
-  exerciseItem: {
-    myExerciseID: string;
-    routine: string;
+  exerciseItem?: {
     isEditing: boolean;
     name: string;
     muscles: string[];
     linkImage: string;
+    myExerciseID: string;
+    objective: string;
+    routine: string;
+    type: string;
+    sets: any[];
   };
 }
 
@@ -47,12 +50,17 @@ export const DeleteMyItemButton = (props: exerciseIT) => {
   };
 
   return (
-    <FontAwesomeIcon
-      icon={faTrash}
-      onClick={() =>
-        deleteMyExercise &&
-        deleteMyExercise(routineID, exerciseItem.myExerciseID)
-      }
-    />
+    <>
+      {exerciseItem && (
+        <button
+          onClick={() =>
+            deleteMyExercise &&
+            deleteMyExercise(routineID, exerciseItem.myExerciseID)
+          }
+        >
+          Delete from Routine <FontAwesomeIcon icon={faTrash} />
+        </button>
+      )}
+    </>
   );
 };

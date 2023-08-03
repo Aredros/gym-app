@@ -26,16 +26,22 @@ interface ITset {
   time: number;
 }
 
+//GET Current URL for going backwards button
+const url = window.location.href;
+
 export const LinkToPage = (props: ITroutineSets) => {
   const { exerciseItem } = props;
   return (
-    <>
-      <Link
-        key={`exercise-details-${exerciseItem.myExerciseID}`}
-        to={`/myexerciseDetails/${exerciseItem.myExerciseID}`}
-      >
-        <FontAwesomeIcon icon={faDatabase} />
-      </Link>
-    </>
+    <Link
+      key={`exercise-details-${exerciseItem.myExerciseID}`}
+      to={
+        {
+          pathname: `/myexerciseDetails/${exerciseItem.myExerciseID}`,
+          state: { prevPage: url },
+        } as any
+      }
+    >
+      <FontAwesomeIcon icon={faDatabase} />
+    </Link>
   );
 };
