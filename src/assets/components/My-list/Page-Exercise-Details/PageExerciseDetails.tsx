@@ -2,11 +2,12 @@ import React, { useContext, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { RoutineContext } from "../../../../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHandPointLeft, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { CreateSetButton } from "../RoutinePage/item-myExercise/CreateSetButton";
 import { DeleteSetButton } from "../RoutinePage/item-myExercise/DeleteSetButton";
 import { ItemSet } from "../RoutinePage/item-myExercise/ItemSet";
 import { DeleteMyItemButton } from "../RoutinePage/item-myExercise/DeleteMyItemButton";
+import StretchImg from "../../../../stretching.png";
 
 interface Routines {
   routineID: string;
@@ -122,7 +123,7 @@ export const PageExerciseDetails = () => {
       <div>
         <div className="main-exercises">
           <div className="PageExerciseDetails-header">
-            <FontAwesomeIcon icon={faHandPointLeft} onClick={goBack} />
+            <FontAwesomeIcon icon={faArrowLeft} onClick={goBack} />
             {ExerciseFromRoutine && <h2>{ExerciseFromRoutine.name}</h2>}
           </div>
 
@@ -131,11 +132,19 @@ export const PageExerciseDetails = () => {
             <div className="page-exercise__area1">
               <div className="page-exercise__area1__image">
                 <img
-                  src={ExerciseFromRoutine?.linkImage}
+                  src={
+                    ExerciseFromRoutine?.linkImage === ""
+                      ? StretchImg
+                      : ExerciseFromRoutine?.linkImage
+                  }
                   alt={ExerciseFromRoutine?.name}
                 />
               </div>
-              <div className="page-exercise__area1__general-details"></div>
+              <div className="page-exercise__area1__general-details">
+                {ExerciseFromRoutine?.muscles.map((muscle) => (
+                  <p key={muscle}>{muscle}</p>
+                ))}
+              </div>
             </div>
             {/* In area 2 we will explore the routine part of the exercise */}
             <form className="page-exercise__area2">
@@ -143,11 +152,10 @@ export const PageExerciseDetails = () => {
               <div className="page-exercise__area2__objective">
                 {editObjective ? (
                   <>
-                    <input
-                      type="text"
+                    <textarea
                       value={objectiveTextState}
                       onChange={(e) => setObjectiveTextState(e.target.value)}
-                    />
+                    ></textarea>
                     <FontAwesomeIcon
                       icon={faEdit}
                       onClick={() => handleObjective()}

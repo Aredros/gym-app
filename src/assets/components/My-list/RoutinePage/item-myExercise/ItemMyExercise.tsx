@@ -77,12 +77,6 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
         }}
       >
         <div className="item-my-exercise__area1__textNimage">
-          {exerciseItem.linkImage && (
-            <ItemImage
-              typeClass={"item-my-exercise"}
-              exerciseItem={exerciseItem}
-            />
-          )}
           <h2>
             {exerciseItem.name} {completedCounter}/{allSets}{" "}
             {completedCounter === allSets ? (

@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { RoutineContext } from "../../../../../App";
+import { Link, useParams, useNavigate } from "react-router-dom";
 
 interface exerciseIT {
   routineID: string;
@@ -47,6 +48,13 @@ export const DeleteMyItemButton = (props: exerciseIT) => {
     //Save into localStorage
     localStorage.setItem("myRoutines", JSON.stringify(updatedRoutines));
     setMyRoutines(updatedRoutines);
+
+    goBack();
+  };
+
+  const navigate = useNavigate();
+  const goBack = () => {
+    navigate(-1);
   };
 
   return (
