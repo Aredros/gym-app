@@ -66,47 +66,48 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
   }, [myRoutines]);
 
   return (
-    <li
-      className="item-my-exercise"
-      key={`edit-my-item-${exerciseItem.myExerciseID}-${exerciseItem.name}`}
+    <Link
+      key={`exercise-details-${exerciseItem.myExerciseID}`}
+      to={
+        {
+          pathname: `/myexerciseDetails/${exerciseItem.myExerciseID}`,
+          state: { prevPage: url },
+        } as any
+      }
     >
-      <div
-        className="item-my-exercise__area1"
-        style={{
-          background: completedCounter === allSets ? "#5fe782" : "##ffe4c4",
-        }}
+      <li
+        className="item-my-exercise"
+        key={`edit-my-item-${exerciseItem.myExerciseID}-${exerciseItem.name}`}
       >
-        <div className="item-my-exercise__area1__textNimage">
-          <h2>
-            {exerciseItem.name} {completedCounter}/{allSets}{" "}
-            {completedCounter === allSets ? (
-              <FontAwesomeIcon icon={faHandFist} />
-            ) : null}
-          </h2>
-        </div>
-        <div className="item-my-exercise__area1__muscles">
-          {exerciseItem.muscles &&
-            exerciseItem.muscles.map((muscle: string) => {
-              return (
-                <span key={`muscles-${muscle}-${exerciseItem.myExerciseID}`}>
-                  {" "}
-                  {muscle}{" "}
-                </span>
-              );
-            })}
-        </div>
-        <Link
-          key={`exercise-details-${exerciseItem.myExerciseID}`}
-          to={
-            {
-              pathname: `/myexerciseDetails/${exerciseItem.myExerciseID}`,
-              state: { prevPage: url },
-            } as any
-          }
+        <div
+          className="item-my-exercise__area1"
+          style={{
+            background: completedCounter === allSets ? "#5fe782" : "##ffe4c4",
+          }}
         >
+          <div className="item-my-exercise__area1__textNimage">
+            <h2>
+              {exerciseItem.name} {completedCounter}/{allSets}{" "}
+              {completedCounter === allSets ? (
+                <FontAwesomeIcon icon={faHandFist} />
+              ) : null}
+            </h2>
+          </div>
+          <div className="item-my-exercise__area1__muscles">
+            {exerciseItem.muscles &&
+              exerciseItem.muscles.map((muscle: string) => {
+                return (
+                  <span key={`muscles-${muscle}-${exerciseItem.myExerciseID}`}>
+                    {" "}
+                    {muscle}{" "}
+                  </span>
+                );
+              })}
+          </div>
+
           <FontAwesomeIcon icon={faRightToBracket} />
-        </Link>
-      </div>
-    </li>
+        </div>
+      </li>
+    </Link>
   );
 };

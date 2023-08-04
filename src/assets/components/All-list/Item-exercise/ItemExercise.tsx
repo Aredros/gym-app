@@ -1,6 +1,4 @@
 import React, { useRef, useContext } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { EditItemExercise } from "./EditItemExercise";
 import { ItemImage } from "./ItemImage";
 import { RoutineContext } from "../../../../App";
@@ -22,6 +20,8 @@ export const ItemExercise = (props: ItemExerciteIT) => {
     exerciseList = [],
     myRoutines = [],
     setMyRoutines = () => {},
+    doneActivities = [],
+    setDoneActivities = () => {},
   } = useContext(RoutineContext) || {}; //getting the colors from the context
 
   const { exercise } = props;
@@ -92,6 +92,7 @@ export const ItemExercise = (props: ItemExerciteIT) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     addMyExercise(exercise.id, routineToChoose);
+    alert("Exercise added to your routine!");
   };
 
   // Generate a unique key for each EditItemExercise component

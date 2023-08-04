@@ -13,7 +13,7 @@ export const Navigation = () => {
           location.pathname === "/" ? "active" : "inactive"
         }`}
       >
-        My Exercises
+        My Routines
       </Link>
       <Link
         to="/all-exercises"

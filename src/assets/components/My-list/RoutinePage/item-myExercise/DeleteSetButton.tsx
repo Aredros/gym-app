@@ -23,12 +23,23 @@ interface ITcreateSet {
   exerciseItem: exerciseIT;
 }
 
+interface doneDataDetails {
+  date: string;
+  id: string;
+  doneExerciseID: string;
+  routineID: string;
+  totalSets: number;
+  completedSets: number;
+}
+
 export const DeleteSetButton = (props: ITcreateSet) => {
   const {
     exerciseList = [],
     setExerciseList = () => {},
     myRoutines = [],
     setMyRoutines = () => {},
+    doneActivities = [],
+    setDoneActivities = () => {},
   } = useContext(RoutineContext) || {}; //getting the colors from the context
 
   const { exerciseID, routineID, exerciseItem } = props;
@@ -72,6 +83,21 @@ export const DeleteSetButton = (props: ITcreateSet) => {
         setMyRoutines(updatedMyRoutines);
       }
     }
+    //now create a new item in the doneData state
+    setDoneActivities((prevDoneActivities) =>
+      prevDoneActivities.map((doneActivity) => {
+        if (
+          doneActivity.doneExerciseID === exerciseID &&
+          doneActivity.totalSets >= 0
+        ) {
+          return {
+            ...doneActivity,
+            totalSets: doneActivity.totalSets - 1,
+          };
+        }
+        return doneActivity;
+      })
+    );
   };
 
   return (

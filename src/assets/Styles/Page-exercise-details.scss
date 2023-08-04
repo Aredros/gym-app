@@ -78,3 +78,20 @@
     }
   }
 }
+
+//PROGRESS BAR for routine pages
+.routine-tracker {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.progress-bar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+}
+
+.routine-ender {
+  margin-bottom: 10px;
+}

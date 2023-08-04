@@ -4,19 +4,14 @@ import "./App.css";
 import "./styles.scss";
 import "./assets/Styles/Page-exercise-details.scss";
 import "./assets/Styles/add-form-styles.scss";
-import { Navigation } from "./assets/components/Navigation";
-import {
-  BrowserRouter,
-  HashRouter,
-  Routes,
-  Route,
-  Link,
-} from "react-router-dom";
+import { Navigation } from "./assets/components/Navigation/Navigation";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AllExercises } from "./assets/components/AllExercises";
 import { MyExercises } from "./assets/components/MyExercises";
 import PersonalLinks from "./assets/components/Navigation/PersonalLinks";
 import { PageExerciseDetails } from "./assets/components/My-list/Page-Exercise-Details/PageExerciseDetails";
 import { RoutinePage } from "./assets/components/My-list/RoutinePage/RoutinePage";
+import { v4 as uuidv4 } from "uuid";
 
 // import addNotification from "react-push-notification";
 
@@ -26,6 +21,7 @@ interface Exercise {
   name: string;
   muscles: string[];
   linkImage: string;
+  details: string;
 }
 interface Routines {
   routineID: string;
@@ -55,13 +51,22 @@ interface ITset {
   time: number;
 }
 
+interface doneDataDetails {
+  date: string;
+  id: string;
+  doneExerciseID: string;
+  routineID: string;
+  totalSets: number;
+  completedSets: number;
+}
+
 interface GeneralContextFiles {
   exerciseList: Exercise[];
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>;
   myRoutines: Routines[];
   setMyRoutines: React.Dispatch<React.SetStateAction<Routines[]>>;
-  // doneArchivedRoutines: Routines[];
-  // setDoneArchivedRoutines: React.Dispatch<React.SetStateAction<Routines[]>>;
+  doneActivities: doneDataDetails[];
+  setDoneActivities: React.Dispatch<React.SetStateAction<doneDataDetails[]>>;
 }
 
 //crearting context that will pass the colors and doneTodoList
@@ -116,41 +121,9 @@ function App() {
           },
         ];
   });
-  // const [doneArchivedRoutines, setDoneArchivedRoutines] = React.useState<
-  //   Routines[]
-  // >([
-  //   {
-  //     myOldExerciseID: "0011",
-  //     sets: [
-  //       {
-  //         setCompleted: false,
-  //         reps: 5,
-  //         weight: 50,
-  //         distance: 0,
-  //         time: 0,
-  //       },
-  //       {
-  //         setCompleted: false,
-  //         reps: 15,
-  //         weight: 55,
-  //         distance: 0,
-  //         time: 0,
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     myOldExerciseID: "0012",
-  //     sets: [
-  //       {
-  //         setCompleted: false,
-  //         reps: 2,
-  //         weight: 50,
-  //         distance: 10,
-  //         time: 110,
-  //       },
-  //     ],
-  //   },
-  // ]);
+  const [doneActivities, setDoneActivities] = React.useState<doneDataDetails[]>(
+    []
+  );
 
   //get all exercises stored into the localStorage
   useEffect(() => {
@@ -169,6 +142,13 @@ function App() {
       setMyRoutines(JSON.parse(MyStoredIntoLocalRoutines));
     }
 
+    const MyStoredIntoLocalDoneActivities = localStorage.getItem(
+      "localDoneActivities"
+    );
+    if (MyStoredIntoLocalDoneActivities) {
+      setDoneActivities(JSON.parse(MyStoredIntoLocalDoneActivities));
+    }
+
     //empty array and local storage
     localStorage.clear();
   }, []);
@@ -185,7 +165,14 @@ function App() {
 
   return (
     <RoutineContext.Provider
-      value={{ exerciseList, setExerciseList, myRoutines, setMyRoutines }}
+      value={{
+        exerciseList,
+        setExerciseList,
+        myRoutines,
+        setMyRoutines,
+        doneActivities,
+        setDoneActivities,
+      }}
     >
       <div className="App">
         {loading ? (

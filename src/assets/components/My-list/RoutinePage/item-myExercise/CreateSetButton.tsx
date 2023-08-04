@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { RoutineContext } from "../../../../../App";
+import { v4 as uuidv4 } from "uuid";
 
 interface ITset {
   setCompleted: boolean;
@@ -14,9 +15,22 @@ interface ITcreateSet {
   routineID: string;
 }
 
+interface doneDataDetails {
+  date: string;
+  id: string;
+  doneExerciseID: string;
+  routineID: string;
+  totalSets: number;
+  completedSets: number;
+}
+
 export const CreateSetButton = (props: ITcreateSet) => {
-  const { myRoutines = [], setMyRoutines = () => {} } =
-    useContext(RoutineContext) || {};
+  const {
+    myRoutines = [],
+    setMyRoutines = () => {},
+    doneActivities = [],
+    setDoneActivities = () => {},
+  } = useContext(RoutineContext) || {};
 
   const { exerciseID, routineID } = props;
 
@@ -46,6 +60,18 @@ export const CreateSetButton = (props: ITcreateSet) => {
           };
         }
         return routine;
+      })
+    );
+    //now create a new item in the doneData state
+    setDoneActivities((prevDoneActivities) =>
+      prevDoneActivities.map((doneActivity) => {
+        if (doneActivity.doneExerciseID === exerciseID) {
+          return {
+            ...doneActivity,
+            totalSets: doneActivity.totalSets + 1,
+          };
+        }
+        return doneActivity;
       })
     );
   };

@@ -25,6 +25,8 @@ export const DeleteMyItemButton = (props: exerciseIT) => {
     setExerciseList = () => {},
     myRoutines = [],
     setMyRoutines = () => {},
+    doneActivities = [],
+    setDoneActivities = () => {},
   } = useContext(RoutineContext) || {}; //getting the colors from the context
 
   const { exerciseItem, routineID } = props;
@@ -49,6 +51,21 @@ export const DeleteMyItemButton = (props: exerciseIT) => {
     localStorage.setItem("myRoutines", JSON.stringify(updatedRoutines));
     setMyRoutines(updatedRoutines);
 
+    //Delete the last item with the same ID from doneData state
+    const lastDoneDataIndex = doneActivities
+      .slice()
+      .reverse()
+      .findIndex((doneData) => doneData.doneExerciseID === selectedExerciseID);
+
+    if (lastDoneDataIndex !== -1) {
+      const lastDoneData =
+        doneActivities[doneActivities.length - lastDoneDataIndex - 1];
+      setDoneActivities(
+        doneActivities.filter((doneData) => doneData !== lastDoneData)
+      );
+    }
+
+    //go back to prev Page
     goBack();
   };
 

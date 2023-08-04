@@ -101,6 +101,7 @@ body {
 
 .main-exercises {
   background: #fff;
+  position: relative;
   color: black;
   padding: 10px 2px;
   border-radius: 0 8px 8px 8px;
@@ -136,7 +137,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  padding: 5px 20px;
+  padding: 5px 10px;
   background: white;
   list-style: none;
   color: black;
@@ -194,12 +195,11 @@ body {
     -moz-border-radius: 8px 0 0 8px;
     -ms-border-radius: 8px 0 0 8px;
     -o-border-radius: 8px 0 0 8px;
-    width: 69px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
+    right: 15px;
+    bottom: 35px;
     position: absolute;
-    top: 0;
-    left: -80px;
-    padding: 5px;
     background: #fff;
     img {
       height: inherit;
@@ -226,12 +226,11 @@ body {
   color: black;
   &__area1 {
     display: flex;
-    background: bisque;
     gap: 10px;
     min-width: 15rem;
     justify-content: space-between;
     align-items: center;
-    padding: 25px 15px 20px 15px;
+    padding: 20px 15px 8px 15px;
     border: 1.5px solid black;
     box-shadow: 3px 3px 2px 2px rgba(44, 44, 44, 0.2);
     position: relative;

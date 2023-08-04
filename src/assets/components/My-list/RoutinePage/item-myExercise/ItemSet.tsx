@@ -20,8 +20,12 @@ interface ItemSetIT {
 }
 
 export const ItemSet = (props: ItemSetIT) => {
-  const { myRoutines = [], setMyRoutines = () => {} } =
-    useContext(RoutineContext) || {}; //getting the colors from the context
+  const {
+    myRoutines = [],
+    setMyRoutines = () => {},
+    doneActivities = [],
+    setDoneActivities = () => {},
+  } = useContext(RoutineContext) || {}; //getting the colors from the context
   //
 
   const { item, index, routineID, exerciseID, type } = props;
@@ -144,6 +148,28 @@ export const ItemSet = (props: ItemSetIT) => {
     });
 
     setMyRoutines(updatedSets);
+
+    // Update doneData's completedSets
+    const matchingDoneData = doneActivities.find(
+      (doneData) =>
+        doneData.doneExerciseID === exerciseID &&
+        doneData.totalSets === index + 1
+    );
+
+    if (matchingDoneData) {
+      const updatedDoneActivities = doneActivities.map((doneData) =>
+        doneData.id === matchingDoneData.id
+          ? {
+              ...doneData,
+              completedSets: checked
+                ? doneData.completedSets + 1
+                : doneData.completedSets - 1,
+            }
+          : doneData
+      );
+
+      setDoneActivities(updatedDoneActivities);
+    }
   };
 
   useEffect(() => {
