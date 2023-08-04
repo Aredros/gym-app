@@ -6,6 +6,15 @@ interface AddExerciseIT {
   closeModal: () => void;
 }
 
+interface Exercise {
+  id: string;
+  isEditing: boolean;
+  name: string;
+  muscles: string[];
+  linkImage: string;
+  details: string;
+}
+
 export const ExerciseForm = (props: AddExerciseIT) => {
   const { exerciseList = [], setExerciseList } =
     useContext(RoutineContext) || {};
@@ -25,12 +34,13 @@ export const ExerciseForm = (props: AddExerciseIT) => {
     linkImage: string
   ) => {
     if (!setExerciseList) return; // Guard against potential null reference
-    const newExercise = {
+    const newExercise: Exercise = {
       id: uuidv4(),
       isEditing: false,
       name: exerciseName,
       muscles: muscles,
       linkImage: linkImage,
+      details: "", // Add this line with an empty string or provide relevant details
     };
     setExerciseList((prevExerciseList) => [...prevExerciseList, newExercise]);
   };
