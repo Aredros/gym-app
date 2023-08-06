@@ -133,11 +133,6 @@ export const RoutinePage = () => {
         <div key={`key-${validRoutineID}`}>
           <h3>{getRoutineName(validRoutineID)}</h3>
           <ProgressTracker routineID={validRoutineID} />
-          <div className="tracking-container">
-            {allRoutineCompletion?.map((each) => (
-              <span key={`completion-${each}`}>{each}</span>
-            ))}
-          </div>
           <ul className="all-exercises-list">
             {TheRoutine?.routineExercises.map((exercise: ITroutineSets) => (
               <ItemMyExercise
