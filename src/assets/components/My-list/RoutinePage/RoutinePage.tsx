@@ -99,7 +99,9 @@ export const RoutinePage = () => {
         // Add new activities for exercises that were not found in existing doneActivities
         TheRoutine?.routineExercises.forEach((exercise) => {
           const existingActivity = updatedDoneActivities.find(
-            (activity) => activity.doneExerciseID === exercise.myExerciseID
+            (activity) =>
+              activity.doneExerciseID === exercise.myExerciseID &&
+              activity.date === new Date().toLocaleDateString()
           );
 
           if (!existingActivity) {
