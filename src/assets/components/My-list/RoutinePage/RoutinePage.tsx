@@ -53,7 +53,6 @@ export const RoutinePage = () => {
 
   const { routineID } = useParams<{ routineID?: string }>();
 
-  const [showStarter, setShowStarter] = useState(true);
   const validRoutineID = routineID ?? "";
   const TheRoutine = myRoutines?.find(
     (routine) => routine.routineID === validRoutineID
@@ -118,14 +117,10 @@ export const RoutinePage = () => {
 
         return updatedDoneActivities;
       });
-
-      setShowStarter(false);
     };
 
-    if (showStarter) {
-      updateDoneActivities();
-    }
-  }, [showStarter, setDoneActivities, TheRoutine, validRoutineID]);
+    updateDoneActivities();
+  }, [setDoneActivities, validRoutineID]);
 
   useEffect(() => {
     // Update localStorage whenever routines change

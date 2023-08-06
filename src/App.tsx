@@ -11,7 +11,6 @@ import { MyExercises } from "./assets/components/MyExercises";
 import PersonalLinks from "./assets/components/Navigation/PersonalLinks";
 import { PageExerciseDetails } from "./assets/components/My-list/Page-Exercise-Details/PageExerciseDetails";
 import { RoutinePage } from "./assets/components/My-list/RoutinePage/RoutinePage";
-import { v4 as uuidv4 } from "uuid";
 
 // import addNotification from "react-push-notification";
 

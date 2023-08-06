@@ -90,6 +90,21 @@
   width: 70px;
   height: 70px;
   border-radius: 50%;
+  position: relative;
+  .progress-bar-date {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    right: 0;
+    font-weight: 700;
+  }
+  .progress-bar-date__today {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -35px;
+    font-weight: 700;
+  }
 }
 
 .routine-ender {
