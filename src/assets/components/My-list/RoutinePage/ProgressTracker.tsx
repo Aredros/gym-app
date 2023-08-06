@@ -148,7 +148,7 @@ export const ProgressTracker = (props: exerciseIT) => {
           >
             {data.progress.toFixed(2)}%
           </progress>
-          <p className="progress-bar-date">{data.progress}%</p>
+          <p className="progress-bar-date">{Math.round(data.progress)}%</p>
           <p className="progress-bar-date__today">
             {
               //Transfor Date to only MONTH and DAY only for Display
