@@ -64,7 +64,7 @@ export const ProgressTracker = (props: exerciseIT) => {
   );
   // Sort the unique dates in descending order
   const sortedUniqueDates = uniqueDates.sort(
-    (a, b) => new Date(b).getTime() - new Date(a).getTime()
+    (a, b) => new Date(a).getTime() - new Date(b).getTime()
   );
 
   // Get the last 4 registered dates

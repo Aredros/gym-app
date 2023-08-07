@@ -88,6 +88,7 @@ export const DeleteSetButton = (props: ITcreateSet) => {
       prevDoneActivities.map((doneActivity) => {
         if (
           doneActivity.doneExerciseID === exerciseID &&
+          doneActivity.date === new Date().toLocaleDateString() &&
           doneActivity.totalSets >= 0
         ) {
           return {

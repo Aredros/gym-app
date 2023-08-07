@@ -65,7 +65,10 @@ export const CreateSetButton = (props: ITcreateSet) => {
     //now create a new item in the doneData state
     setDoneActivities((prevDoneActivities) =>
       prevDoneActivities.map((doneActivity) => {
-        if (doneActivity.doneExerciseID === exerciseID) {
+        if (
+          doneActivity.doneExerciseID === exerciseID &&
+          doneActivity.date === new Date().toLocaleDateString()
+        ) {
           return {
             ...doneActivity,
             totalSets: doneActivity.totalSets + 1,

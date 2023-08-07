@@ -153,6 +153,7 @@ export const ItemSet = (props: ItemSetIT) => {
     const matchingDoneData = doneActivities.find(
       (doneData) =>
         doneData.doneExerciseID === exerciseID &&
+        doneData.date === new Date().toLocaleDateString() &&
         doneData.totalSets === index + 1
     );
 
