@@ -79,7 +79,11 @@ export const RoutinePage = () => {
             if (
               matchingExercise &&
               activity.routineID === validRoutineID &&
-              activity.date === new Date().toLocaleDateString()
+              activity.date ===
+                new Date().toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                })
             ) {
               const completedSets = matchingExercise.sets.filter(
                 (set) => set.setCompleted
@@ -101,12 +105,19 @@ export const RoutinePage = () => {
           const existingActivity = updatedDoneActivities.find(
             (activity) =>
               activity.doneExerciseID === exercise.myExerciseID &&
-              activity.date === new Date().toLocaleDateString()
+              activity.date ===
+                new Date().toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                })
           );
 
           if (!existingActivity) {
             updatedDoneActivities.push({
-              date: new Date().toLocaleDateString(),
+              date: new Date().toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+              }),
               id: uuidv4(),
               doneExerciseID: exercise.myExerciseID,
               routineID: validRoutineID,

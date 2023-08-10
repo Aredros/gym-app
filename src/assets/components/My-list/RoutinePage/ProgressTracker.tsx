@@ -48,7 +48,10 @@ export const ProgressTracker = (props: exerciseIT) => {
 
   const { routineID } = props;
 
-  const currentDate = new Date(); // Define the currentDate here
+  const currentDate = new Date().toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  }); // Define the currentDate here
 
   // Calculate the unique dates from doneActivities for the given routine and exercise, excluding the current day
   const uniqueDates = Array.from(
@@ -56,8 +59,7 @@ export const ProgressTracker = (props: exerciseIT) => {
       doneActivities
         .filter(
           (activity) =>
-            activity.routineID === routineID &&
-            activity.date !== currentDate.toLocaleDateString()
+            activity.routineID === routineID && activity.date !== currentDate
         )
         .map((activity) => activity.date)
     )
@@ -68,7 +70,7 @@ export const ProgressTracker = (props: exerciseIT) => {
   );
 
   // Get the last 4 registered dates
-  const lastFourDays = sortedUniqueDates.slice(0, 4);
+  const lastFourDays = sortedUniqueDates.slice(0, 3);
 
   // Create a map to group activities by date
   const groupedActivities = new Map<string, doneDataDetails[]>();

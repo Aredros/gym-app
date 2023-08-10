@@ -145,6 +145,8 @@ function App() {
       "localDoneActivities"
     );
     if (MyStoredIntoLocalDoneActivities) {
+      const ParsedDoneActivities = JSON.parse(MyStoredIntoLocalDoneActivities);
+      console.log(ParsedDoneActivities);
       setDoneActivities(JSON.parse(MyStoredIntoLocalDoneActivities));
     }
 
