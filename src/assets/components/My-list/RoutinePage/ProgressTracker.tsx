@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { RoutineContext } from "../../../../App";
 
 interface exerciseIT {
@@ -48,29 +48,30 @@ export const ProgressTracker = (props: exerciseIT) => {
 
   const { routineID } = props;
 
-  const currentDate = new Date().toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  }); // Define the currentDate here
+  // State to store the last four days
+  const [lastFourDays, setLastFourDays] = useState<string[]>([]);
 
-  // Calculate the unique dates from doneActivities for the given routine and exercise, excluding the current day
-  const uniqueDates = Array.from(
-    new Set(
-      doneActivities
-        .filter(
-          (activity) =>
-            activity.routineID === routineID && activity.date !== currentDate
-        )
-        .map((activity) => activity.date)
-    )
-  );
-  // Sort the unique dates in descending order
-  const sortedUniqueDates = uniqueDates.sort(
-    (a, b) => new Date(a).getTime() - new Date(b).getTime()
-  );
+  useEffect(() => {
+    // Calculate the unique dates from doneActivities for the given routine and exercise, excluding the current day
+    const uniqueDates = Array.from(
+      new Set(
+        doneActivities
+          .filter(
+            (activity) =>
+              activity.routineID === routineID &&
+              activity.date !== new Date().toLocaleDateString()
+          )
+          .map((activity) => activity.date)
+      )
+    );
 
-  // Get the last 4 registered dates
-  const lastFourDays = sortedUniqueDates.slice(0, 3);
+    const sortedUniqueDates = uniqueDates.sort();
+
+    // Update the lastFourDays state with the latest dates
+    setLastFourDays(
+      sortedUniqueDates.slice(Math.max(0, sortedUniqueDates.length - 3))
+    );
+  }, [doneActivities]); // Run the effect whenever doneActivities or routineID changes
 
   // Create a map to group activities by date
   const groupedActivities = new Map<string, doneDataDetails[]>();
