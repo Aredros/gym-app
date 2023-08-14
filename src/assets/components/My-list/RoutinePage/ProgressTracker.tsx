@@ -52,6 +52,7 @@ export const ProgressTracker = (props: exerciseIT) => {
   const [lastFourDays, setLastFourDays] = useState<string[]>([]);
 
   useEffect(() => {
+    const currentDate = new Date(); // Get the current date
     // Calculate the unique dates from doneActivities for the given routine and exercise, excluding the current day
     const uniqueDates = Array.from(
       new Set(
@@ -59,17 +60,24 @@ export const ProgressTracker = (props: exerciseIT) => {
           .filter(
             (activity) =>
               activity.routineID === routineID &&
-              activity.date !== new Date().toLocaleDateString()
+              activity.date !== currentDate.toLocaleDateString()
           )
-          .map((activity) => activity.date)
+          .map((activity) => new Date(activity.date))
       )
     );
 
-    const sortedUniqueDates = uniqueDates.sort();
+    const sortedUniqueDates = uniqueDates.sort(
+      (date1, date2) => date2.getTime() - date1.getTime()
+    );
+
+    // Convert sorted dates back to strings for display
+    const formattedDates = sortedUniqueDates.map((date) =>
+      date.toLocaleDateString()
+    );
 
     // Update the lastFourDays state with the latest dates
     setLastFourDays(
-      sortedUniqueDates.slice(Math.max(0, sortedUniqueDates.length - 3))
+      formattedDates.slice(0, Math.min(3, formattedDates.length))
     );
   }, [doneActivities]); // Run the effect whenever doneActivities or routineID changes
 
@@ -85,6 +93,7 @@ export const ProgressTracker = (props: exerciseIT) => {
   });
 
   // Create progress data for each of the last four days
+  // let organizedDays = lastFourDays.sort((p1, p2)=> p1.date > p2.date)
   const progressData = lastFourDays.map((date) => {
     const activities = groupedActivities.get(date) || [];
     const totalCompletedSets = activities.reduce(
@@ -102,6 +111,8 @@ export const ProgressTracker = (props: exerciseIT) => {
       progress: progress,
     };
   });
+
+  const newOrderProgressData = progressData.reverse();
 
   //Data used for the last BAR that is going to be the current day when the activities are being done
   const countAllSetsInRoutine = (
@@ -129,7 +140,7 @@ export const ProgressTracker = (props: exerciseIT) => {
 
   return (
     <div className="routine-tracker">
-      {progressData.map((data, index) => (
+      {newOrderProgressData.map((data, index) => (
         <div
           key={index}
           className={`progress-bar ${data.date}`}

@@ -5,7 +5,7 @@ import "./styles.scss";
 import "./assets/Styles/Page-exercise-details.scss";
 import "./assets/Styles/add-form-styles.scss";
 import { Navigation } from "./assets/components/Navigation/Navigation";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AllExercises } from "./assets/components/AllExercises";
 import { MyExercises } from "./assets/components/MyExercises";
 import PersonalLinks from "./assets/components/Navigation/PersonalLinks";
@@ -221,6 +221,7 @@ function App() {
                     path={`/routine/:routineID`}
                     element={<RoutinePage />}
                   />
+                  <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </div>
             </BrowserRouter>
