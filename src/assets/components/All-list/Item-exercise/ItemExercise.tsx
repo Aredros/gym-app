@@ -12,6 +12,7 @@ interface ItemExerciteIT {
     name: string;
     muscles: string[];
     linkImage: string;
+    details: string;
   };
 }
 
@@ -50,7 +51,7 @@ export const ItemExercise = (props: ItemExerciteIT) => {
     );
     if (selectedExercise) {
       const updatedExercise = {
-        id: selectedExercise.id, // Add the 'id' property
+        idExercise: selectedExercise.id, // Add the 'id' property
         isEditing: false, // Add the 'isEditing' property
         name: selectedExercise.name,
         muscles: selectedExercise.muscles,

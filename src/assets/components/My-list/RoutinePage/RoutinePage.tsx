@@ -16,6 +16,7 @@ interface Routines {
 }
 
 interface ITroutineSets {
+  idExercise: string;
   isEditing: boolean;
   name: string;
   muscles: string[];
@@ -46,6 +47,7 @@ interface doneDataDetails {
 
 export const RoutinePage = () => {
   const {
+    exerciseList = [],
     myRoutines = [],
     doneActivities = [],
     setDoneActivities = () => {},

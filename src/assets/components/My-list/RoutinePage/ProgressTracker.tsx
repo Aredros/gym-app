@@ -23,6 +23,7 @@ interface ITRoutine {
   routineExercises: ITroutineSets[];
 }
 interface ITroutineSets {
+  idExercise: string;
   isEditing: boolean;
   name: string;
   muscles: string[];

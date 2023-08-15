@@ -24,6 +24,7 @@ export const ExerciseForm = (props: AddExerciseIT) => {
   const [exerciseName, setExerciseName] = React.useState("");
   const [linkImage, setLinkImage] = React.useState("");
   const [muscles, setMuscles] = React.useState<string[]>([""]);
+  const [details, setDetails] = React.useState("");
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -40,7 +41,7 @@ export const ExerciseForm = (props: AddExerciseIT) => {
       name: exerciseName,
       muscles: muscles,
       linkImage: linkImage,
-      details: "", // Add this line with an empty string or provide relevant details
+      details: details, // Add this line with an empty string or provide relevant details
     };
     setExerciseList((prevExerciseList) => [...prevExerciseList, newExercise]);
   };
@@ -51,6 +52,7 @@ export const ExerciseForm = (props: AddExerciseIT) => {
     setExerciseName("");
     setLinkImage("");
     setMuscles([""]);
+    setDetails("");
     // reset the form
     formRef.current?.reset();
     ///close the pop up
@@ -233,6 +235,10 @@ export const ExerciseForm = (props: AddExerciseIT) => {
         placeholder="Image url"
         onChange={(e) => setLinkImage(e.target.value)}
       />
+      <textarea
+        onChange={(e) => setDetails(e.target.value)}
+        placeholder="Description"
+      ></textarea>
       <div className="exerciseAddForm__buttons">
         <button type="submit">Add</button>
         <button type="reset" onClick={closeModal}>

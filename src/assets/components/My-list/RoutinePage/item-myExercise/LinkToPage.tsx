@@ -6,6 +6,7 @@ import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 
 interface ITroutineSets {
   exerciseItem: {
+    idExercise: string;
     isEditing: boolean;
     name: string;
     muscles: string[];

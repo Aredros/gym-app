@@ -7,6 +7,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 interface exerciseIT {
   routineID: string;
   exerciseItem?: {
+    idExercise: string;
     isEditing: boolean;
     name: string;
     muscles: string[];

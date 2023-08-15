@@ -5,11 +5,11 @@ import {
   faHandFist,
   faRightToBracket,
 } from "@fortawesome/free-solid-svg-icons";
-import { ItemImage } from "../../../All-list/Item-exercise/ItemImage";
 
 import { RoutineContext } from "../../../../../App";
 
 interface ITroutineSets {
+  idExercise: string;
   isEditing: boolean;
   name: string;
   muscles: string[];

@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
-import { RoutinePage } from "./My-list/RoutinePage/RoutinePage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { Routes, Route, Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { RoutineForm } from "./My-list/RoutinePage/RoutineForm";
 import { RoutineContext } from "../../App";
 

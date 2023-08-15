@@ -1,6 +1,7 @@
 import { ItemMyExercise } from "./RoutinePage/item-myExercise/ItemMyExercise";
 
 interface exerciseIT {
+  idExercise: string;
   myExerciseID: string;
   weekday: string;
   isEditing: boolean;

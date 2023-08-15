@@ -5,7 +5,14 @@ import "./styles.scss";
 import "./assets/Styles/Page-exercise-details.scss";
 import "./assets/Styles/add-form-styles.scss";
 import { Navigation } from "./assets/components/Navigation/Navigation";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import {
+  useNavigate,
+  BrowserRouter,
+  Routes,
+  Route,
+  HashRouter,
+} from "react-router-dom";
 import { AllExercises } from "./assets/components/AllExercises";
 import { MyExercises } from "./assets/components/MyExercises";
 import PersonalLinks from "./assets/components/Navigation/PersonalLinks";
@@ -31,6 +38,7 @@ interface Routines {
   routineExercises: ITroutineSets[];
 }
 interface ITroutineSets {
+  idExercise: string;
   isEditing: boolean;
   name: string;
   muscles: string[];
@@ -206,13 +214,13 @@ function App() {
             <PersonalLinks />
             <h1>Gym list</h1>
 
-            <BrowserRouter basename="/gym-app/">
+            <BrowserRouter basename="/gym-app">
               <div>
                 <Navigation />
 
                 <Routes>
                   <Route path="/" element={<MyExercises />} />
-                  <Route path="/all-exercises/" element={<AllExercises />} />
+                  <Route path="/all-exercises" element={<AllExercises />} />
                   <Route
                     path={`/myexerciseDetails/:myExerciseID`}
                     element={<PageExerciseDetails />}
@@ -221,7 +229,6 @@ function App() {
                     path={`/routine/:routineID`}
                     element={<RoutinePage />}
                   />
-                  <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </div>
             </BrowserRouter>

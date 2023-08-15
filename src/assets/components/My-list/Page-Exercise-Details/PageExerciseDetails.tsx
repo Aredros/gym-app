@@ -19,6 +19,7 @@ interface Routines {
 }
 
 interface IExerciseInfo {
+  idExercise: string;
   isEditing: boolean;
   name: string;
   muscles: string[];
@@ -141,9 +142,20 @@ export const PageExerciseDetails = () => {
                 />
               </div>
               <div className="page-exercise__area1__general-details">
-                {ExerciseFromRoutine?.muscles.map((muscle) => (
-                  <p key={muscle}>{muscle}</p>
-                ))}
+                <div className="details-muscle">
+                  {" "}
+                  {ExerciseFromRoutine?.muscles.map((muscle) => (
+                    <p key={muscle}>{muscle}</p>
+                  ))}
+                </div>
+
+                <p className="details-description">
+                  {exerciseList.map((exercise) => {
+                    if (exercise.id === ExerciseFromRoutine?.idExercise) {
+                      return exercise.details;
+                    }
+                  })}
+                </p>
               </div>
             </div>
             {/* In area 2 we will explore the routine part of the exercise */}
