@@ -129,7 +129,7 @@ function App() {
         ];
   });
   const [doneActivities, setDoneActivities] = React.useState<doneDataDetails[]>(
-    []
+    () => JSON.parse(localStorage.getItem("localDoneActivities") || "[]")
   );
 
   //get all exercises stored into the localStorage
@@ -153,13 +153,11 @@ function App() {
       "localDoneActivities"
     );
     if (MyStoredIntoLocalDoneActivities) {
-      const ParsedDoneActivities = JSON.parse(MyStoredIntoLocalDoneActivities);
-      console.log(ParsedDoneActivities);
       setDoneActivities(JSON.parse(MyStoredIntoLocalDoneActivities));
     }
 
     //empty array and local storage
-    localStorage.clear();
+    // localStorage.clear();
   }, []);
 
   // Save updated exerciseList to localStorage

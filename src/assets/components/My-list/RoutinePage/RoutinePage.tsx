@@ -55,7 +55,7 @@ export const RoutinePage = () => {
 
   const { routineID } = useParams<{ routineID?: string }>();
 
-  const [dateTest, setDateTest] = useState("");
+  const [activeDay, setActiveDay] = useState("");
 
   const validRoutineID = routineID ?? "";
   const TheRoutine = myRoutines?.find(
@@ -70,84 +70,83 @@ export const RoutinePage = () => {
   };
   //
 
-  useEffect(() => {
-    const updateDoneActivities = () => {
-      setDoneActivities((prevDoneActivities) => {
-        const updatedDoneActivities: doneDataDetails[] = prevDoneActivities.map(
-          (activity) => {
-            const matchingExercise = TheRoutine?.routineExercises.find(
-              (exercise) => exercise.myExerciseID === activity.doneExerciseID
-            );
+  const startRoutineHandler = () => {
+    const todayDateString = new Date().toLocaleDateString();
+    console.log("Start Routine Clicked");
+    setActiveDay(todayDateString);
+  };
 
-            if (
-              matchingExercise &&
-              activity.routineID === validRoutineID &&
-              activity.date === new Date().toLocaleDateString()
-            ) {
-              const completedSets = matchingExercise.sets.filter(
-                (set) => set.setCompleted
-              ).length;
+  const updateDoneActivities = () => {
+    setDoneActivities((prevDoneActivities) => {
+      const todayDateString = new Date().toLocaleDateString();
 
-              return {
-                ...activity,
-                totalSets: matchingExercise.sets.length,
-                completedSets: completedSets,
-              };
-            }
-
+      const updatedDoneActivities: doneDataDetails[] = prevDoneActivities.map(
+        (activity) => {
+          // Filter out activities from previous days
+          if (activity.date !== todayDateString) {
             return activity;
           }
-        );
 
-        // Add new activities for exercises that were not found in existing doneActivities
-        TheRoutine?.routineExercises.forEach((exercise) => {
-          const existingActivity = updatedDoneActivities.find(
-            (activity) =>
-              activity.doneExerciseID === exercise.myExerciseID &&
-              activity.date === new Date().toLocaleDateString()
+          const matchingExercise = TheRoutine?.routineExercises.find(
+            (exercise) => exercise.myExerciseID === activity.doneExerciseID
           );
 
-          if (!existingActivity) {
-            updatedDoneActivities.push({
-              date: new Date().toLocaleDateString(),
-              id: uuidv4(),
-              doneExerciseID: exercise.myExerciseID,
-              routineID: validRoutineID,
-              totalSets: exercise.sets.length,
-              completedSets: exercise.sets.filter((set) => set.setCompleted)
-                .length,
-            });
+          if (
+            matchingExercise &&
+            activity.routineID === validRoutineID &&
+            activity.date === todayDateString
+          ) {
+            const completedSets = matchingExercise.sets.filter(
+              (set) => set.setCompleted
+            ).length;
+
+            return {
+              ...activity,
+              totalSets: matchingExercise.sets.length,
+              completedSets: completedSets,
+            };
           }
-        });
 
-        return updatedDoneActivities;
-      });
-    };
-
-    updateDoneActivities();
-  }, [setDoneActivities, validRoutineID]);
-
-  ///Control the testing handles
-  const TestingHandler = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    if (dateTest !== "" && TheRoutine) {
-      const firstExercise = TheRoutine?.routineExercises[0];
-      const newDoneActivity = {
-        date: new Date(dateTest).toLocaleDateString(), // Convert to the "yyyy-MM-dd" format
-        id: uuidv4(),
-        doneExerciseID: firstExercise.myExerciseID,
-        routineID: validRoutineID,
-        totalSets: 4,
-        completedSets: 1,
-      };
-      setDoneActivities([...doneActivities, newDoneActivity]);
-      // Update localStorage whenever routines change
-      localStorage.setItem(
-        "localDoneActivities",
-        JSON.stringify(doneActivities)
+          return activity;
+        }
       );
-    }
+
+      // Add new activity for exercises that were not found in existing doneActivities
+      TheRoutine?.routineExercises.forEach((exercise) => {
+        const existingActivity = updatedDoneActivities.find(
+          (activity) =>
+            activity.doneExerciseID === exercise.myExerciseID &&
+            activity.date === todayDateString
+        );
+
+        if (!existingActivity) {
+          updatedDoneActivities.push({
+            date: todayDateString,
+            id: uuidv4(),
+            doneExerciseID: exercise.myExerciseID,
+            routineID: validRoutineID,
+            totalSets: exercise.sets.length,
+            completedSets: exercise.sets.filter((set) => set.setCompleted)
+              .length,
+          });
+        }
+      });
+
+      return updatedDoneActivities;
+    });
   };
+
+  const checkAndUpdateDoneActivities = () => {
+    if (activeDay === new Date().toLocaleDateString()) {
+      updateDoneActivities();
+    }
+    // Recursively call the function
+    requestAnimationFrame(checkAndUpdateDoneActivities);
+  };
+
+  useEffect(() => {
+    checkAndUpdateDoneActivities();
+  }, [activeDay, setDoneActivities]);
 
   useEffect(() => {
     // Update localStorage whenever doneActivities change
@@ -160,6 +159,14 @@ export const RoutinePage = () => {
         <div key={`key-${validRoutineID}`}>
           <h3>{getRoutineName(validRoutineID)}</h3>
           <ProgressTracker routineID={validRoutineID} />
+          <div className="start-routine-button">
+            <button onClick={startRoutineHandler}>Save Routine</button>
+            <p>
+              If the routine has not been saved, then it wont be shown on past
+              days
+            </p>
+          </div>
+
           <ul className="all-exercises-list">
             {TheRoutine?.routineExercises.map((exercise: ITroutineSets) => (
               <ItemMyExercise
@@ -172,23 +179,6 @@ export const RoutinePage = () => {
           <DeleteRoutineButton routineID={validRoutineID} />
         </div>
       </div>
-      <form>
-        <label>Add Done Activity:</label>
-        <input
-          type="date"
-          value={dateTest}
-          onChange={(e) => {
-            setDateTest(e.target.value); // Simply set the date value as is
-          }}
-        />
-        <button
-          onClick={(e) => {
-            TestingHandler(e);
-          }}
-        >
-          Add Done Activity
-        </button>
-      </form>
     </div>
   );
 };
