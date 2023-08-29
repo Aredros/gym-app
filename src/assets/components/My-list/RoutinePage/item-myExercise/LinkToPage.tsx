@@ -1,6 +1,4 @@
-import React, { useContext } from "react";
-import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
-import { PageExerciseDetails } from "../../Page-Exercise-Details/PageExerciseDetails";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDatabase } from "@fortawesome/free-solid-svg-icons";
 

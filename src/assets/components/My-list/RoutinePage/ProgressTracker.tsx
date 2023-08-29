@@ -21,18 +21,17 @@ interface ITRoutine {
   routineImage: string;
   routineCompletion: number[];
   routineExercises: ITroutineSets[];
+  routineCreator: string;
 }
 interface ITroutineSets {
-  idExercise: string;
+  allExercisesUniqueID: string;
   isEditing: boolean;
-  name: string;
-  muscles: string[];
-  linkImage: string;
-  myExerciseID: string;
+  individualMyExerciseID: string;
   objective: string;
   routine: string;
   type: string;
   sets: ITset[];
+  myExUserCreator: string;
 }
 
 interface ITset {
@@ -45,7 +44,7 @@ interface ITset {
 
 export const ProgressTracker = (props: exerciseIT) => {
   const { myRoutines = [], doneActivities = [] } =
-    useContext(RoutineContext) || {}; //getting the colors from the context
+    useContext(RoutineContext) || {};
 
   const { routineID } = props;
 
@@ -141,40 +140,44 @@ export const ProgressTracker = (props: exerciseIT) => {
 
   return (
     <div className="routine-tracker">
-      {newOrderProgressData.map((data, index) => (
-        <div
-          key={index}
-          className={`progress-bar ${data.date}`}
-          style={{
-            background: `radial-gradient(closest-side, white 79%, transparent 80% 100%), conic-gradient(${
-              data.progress === 100 ? "#5fe782" : "#d72536"
-            } ${data.progress}%, #b1b2c3 0)`,
-          }}
-        >
-          <progress
-            value={data.progress}
-            max-content={100}
-            min-content={0}
+      {newOrderProgressData.length > 0 ? (
+        newOrderProgressData.map((data, index) => (
+          <div
+            key={index}
+            className={`progress-bar ${data.date}`}
             style={{
-              visibility: "hidden",
-              height: "0",
-              width: "0",
+              background: `radial-gradient(closest-side, white 79%, transparent 80% 100%), conic-gradient(${
+                data.progress === 100 ? "#5fe782" : "#d72536"
+              } ${data.progress}%, #b1b2c3 0)`,
             }}
           >
-            {data.progress.toFixed(2)}%
-          </progress>
-          <p className="progress-bar-date">{Math.round(data.progress)}%</p>
-          <p className="progress-bar-date__today">
-            {
-              //Transfor Date to only MONTH and DAY only for Display
-              new Date(data.date).toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-              })
-            }
-          </p>
-        </div>
-      ))}
+            <progress
+              value={data.progress}
+              max-content={100}
+              min-content={0}
+              style={{
+                visibility: "hidden",
+                height: "0",
+                width: "0",
+              }}
+            >
+              {data.progress.toFixed(2)}%
+            </progress>
+            <p className="progress-bar-date">{Math.round(data.progress)}%</p>
+            <p className="progress-bar-date__today">
+              {
+                //Transfor Date to only MONTH and DAY only for Display
+                new Date(data.date).toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                })
+              }
+            </p>
+          </div>
+        ))
+      ) : (
+        <></>
+      )}
       <div
         key={`current-bar-${routineID}`}
         className="progress-bar"

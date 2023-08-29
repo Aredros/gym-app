@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   faHandFist,
   faRightToBracket,
@@ -8,17 +8,25 @@ import {
 
 import { RoutineContext } from "../../../../../App";
 
-interface ITroutineSets {
-  idExercise: string;
+interface AllListExercise {
+  id: string;
   isEditing: boolean;
   name: string;
   muscles: string[];
   linkImage: string;
-  myExerciseID: string;
+  details: string;
+  userCreator: string;
+}
+
+interface ITroutineSets {
+  allExercisesUniqueID: string;
+  isEditing: boolean;
+  individualMyExerciseID: string;
   objective: string;
   routine: string;
   type: string;
   sets: ITset[];
+  myExUserCreator: string;
 }
 
 interface ITset {
@@ -35,19 +43,10 @@ interface ItemMyExerciseIT {
 }
 
 export const ItemMyExercise = (props: ItemMyExerciseIT) => {
-  const { myRoutines = [], setMyRoutines = () => {} } =
+  const { exerciseList = [], myRoutines = [] } =
     useContext(RoutineContext) || {}; //getting the colors from the context
 
   const { exerciseItem, routineID } = props;
-
-  //state to show or dissapear the settings that has options like Delete
-  const [optionState, setOptionState] = React.useState<boolean>(false);
-  //
-  const [editObjective, setEditObjective] = useState(false);
-  //
-  const [objectiveTextState, setObjectiveTextState] = useState(
-    exerciseItem.objective
-  );
 
   const allSets = exerciseItem.sets.length;
 
@@ -55,7 +54,9 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
     exerciseItem.sets.filter((each: ITset) => each.setCompleted === true)
       ?.length || 0;
 
-  //Function to know if all sets from an exercise have been done
+  const GeneralExerciseInfo: AllListExercise | undefined = exerciseList.find(
+    (exercise) => exercise.id === exerciseItem.allExercisesUniqueID
+  );
 
   //GET Current URL for going backwards button
   const url = window.location.href;
@@ -67,17 +68,17 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
 
   return (
     <Link
-      key={`exercise-details-${exerciseItem.myExerciseID}`}
+      key={`exercise-details-${exerciseItem.individualMyExerciseID}`}
       to={
         {
-          pathname: `/myexerciseDetails/${exerciseItem.myExerciseID}`,
+          pathname: `/myexerciseDetails/${exerciseItem.individualMyExerciseID}`,
           state: { prevPage: url },
         } as any
       }
     >
       <li
         className="item-my-exercise"
-        key={`edit-my-item-${exerciseItem.myExerciseID}-${exerciseItem.name}`}
+        key={`edit-my-item-${exerciseItem.individualMyExerciseID}-${GeneralExerciseInfo?.name}`}
       >
         <div
           className="item-my-exercise__area1"
@@ -87,17 +88,19 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
         >
           <div className="item-my-exercise__area1__textNimage">
             <h2>
-              {exerciseItem.name} {completedCounter}/{allSets}{" "}
+              {GeneralExerciseInfo?.name} {completedCounter}/{allSets}{" "}
               {completedCounter === allSets ? (
                 <FontAwesomeIcon icon={faHandFist} />
               ) : null}
             </h2>
           </div>
           <div className="item-my-exercise__area1__muscles">
-            {exerciseItem.muscles &&
-              exerciseItem.muscles.map((muscle: string) => {
+            {GeneralExerciseInfo?.muscles &&
+              GeneralExerciseInfo?.muscles.map((muscle: string) => {
                 return (
-                  <span key={`muscles-${muscle}-${exerciseItem.myExerciseID}`}>
+                  <span
+                    key={`muscles-${muscle}-${exerciseItem.individualMyExerciseID}`}
+                  >
                     {" "}
                     {muscle}{" "}
                   </span>

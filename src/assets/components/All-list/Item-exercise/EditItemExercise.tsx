@@ -1,21 +1,34 @@
 import React, { useRef, useContext } from "react";
 import { RoutineContext } from "../../../../App";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  updateDoc,
+  getDoc,
+  doc,
+} from "firebase/firestore";
+import { auth, db } from "../../../../config/firebase"; // Import your initialized Firebase instance
 
 interface AddExerciseIT {
   closeModal: () => void;
   exercise: {
     id: string;
+    isEditing: boolean;
     name: string;
     muscles: string[];
     linkImage: string;
+    details: string;
+    userCreator: string;
   };
 }
 
 export const EditItemExercise = (props: AddExerciseIT) => {
   const {
     exerciseList = [],
-    myRoutines = [],
     setExerciseList = () => {},
+    isLoggedIn,
   } = useContext(RoutineContext) || {}; //getting the colors from the context
 
   const { closeModal, exercise } = props;
@@ -47,7 +60,7 @@ export const EditItemExercise = (props: AddExerciseIT) => {
   };
 
   //process and finish the editing process //CURRENTLY WORKING ON
-  const processEditingExercise = (
+  const processEditingExercise = async (
     id: string,
     exerciseName: string,
     muscles: string[],
@@ -67,6 +80,26 @@ export const EditItemExercise = (props: AddExerciseIT) => {
       }
     });
     setExerciseList(updatedExercises);
+    if (isLoggedIn) {
+      try {
+        // Create a new Firestore document reference for the exercise
+        const exerciseDocRef = doc(db, "allExercises", `exercise-${id}`);
+        // Get the routine document from Firestore
+        const exerciseDoc = await getDoc(exerciseDocRef);
+
+        if (exerciseDoc.exists()) {
+          // Update the exercise document
+          await updateDoc(exerciseDocRef, {
+            name: exerciseName,
+            muscles: muscles,
+            linkImage: linkImage,
+          });
+          console.log("Exercise edited in Firebase");
+        }
+      } catch (err) {
+        console.log(`not added` + err);
+      }
+    }
   };
 
   return (

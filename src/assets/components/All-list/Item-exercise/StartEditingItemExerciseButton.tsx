@@ -7,9 +7,12 @@ interface StartEditExerciseIT {
   openModal: () => void;
   exercise: {
     id: string;
+    isEditing: boolean;
     name: string;
     muscles: string[];
     linkImage: string;
+    details: string;
+    userCreator: string;
   };
 }
 

@@ -1,6 +1,8 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef, useContext, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { RoutineContext } from "../../../../App";
+import { auth, db } from "../../../../config/firebase";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 interface AddExerciseIT {
   closeModal: () => void;
@@ -8,14 +10,15 @@ interface AddExerciseIT {
 
 export const RoutineForm = (props: AddExerciseIT) => {
   const {
-    exerciseList = [],
     myRoutines = [],
     setMyRoutines = () => {},
+    isLoggedIn,
   } = useContext(RoutineContext) || {}; //getting the colors from the context
 
   const { closeModal } = props;
 
   const [routineName, setRoutineName] = React.useState("");
+  const [routineImage, setRoutineImage] = React.useState("");
   const [linkImage, setLinkImage] = React.useState("");
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -32,7 +35,7 @@ export const RoutineForm = (props: AddExerciseIT) => {
   };
 
   //create and add exercise to the list of exercises
-  const addRoutine = (routineName: string, routineImage: string) => {
+  const addRoutine = async (routineName: string, routineImage: string) => {
     const newRoutine = {
       routineID: uuidv4(),
       isEditing: false,
@@ -40,14 +43,35 @@ export const RoutineForm = (props: AddExerciseIT) => {
       routineImage: routineImage,
       routineCompletion: [],
       routineExercises: [], // Add routineExercises as an empty array
+      routineCreator: auth.currentUser?.email || "",
     };
     setMyRoutines([...myRoutines, newRoutine]);
-    //Save into localStorage
-    localStorage.setItem(
-      "myRoutines",
-      JSON.stringify([...myRoutines, newRoutine])
-    );
+
+    if (isLoggedIn) {
+      try {
+        // Create a new Firestore collection reference
+        const routinesCollectionRef = collection(db, "myExercises");
+
+        // Construct the document ID with the desired format
+        const documentId = `routine-${newRoutine.routineID}`;
+
+        // Create a reference to the document
+        const routineDocRef = doc(routinesCollectionRef, documentId);
+
+        // Set the data for the document
+        await setDoc(routineDocRef, newRoutine);
+
+        console.log("Sending routine to Firebase");
+      } catch (err) {
+        console.log(err);
+      }
+    }
   };
+
+  // Save updated exercises and routines to localStorage
+  useEffect(() => {
+    localStorage.setItem("myRoutines", JSON.stringify(myRoutines));
+  }, [myRoutines]);
 
   return (
     <form onSubmit={submitRoutine} className="exerciseAddForm" ref={formRef}>

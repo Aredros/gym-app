@@ -2,16 +2,11 @@ import React, { useRef, useEffect, useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link, useLocation } from "react-router-dom";
-import { RoutineForm } from "./My-list/RoutinePage/RoutineForm";
+import { RoutineForm } from "../components/My-list/RoutinePage/RoutineForm";
 import { RoutineContext } from "../../App";
 
 export const MyExercises = () => {
-  const {
-    exerciseList = [],
-    setExerciseList = () => {},
-    myRoutines = [],
-    setMyRoutines = () => {},
-  } = useContext(RoutineContext) || {}; //getting the colors from the context
+  const { myRoutines = [] } = useContext(RoutineContext) || {}; //getting the colors from the context
 
   const location = useLocation(); // Get the current location
 

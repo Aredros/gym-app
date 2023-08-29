@@ -2,6 +2,20 @@ import React, { useContext, useEffect } from "react";
 import { RoutineContext } from "../../../../../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock, faWeightHanging } from "@fortawesome/free-solid-svg-icons";
+import { auth, db } from "../../../../../config/firebase";
+import { updateDoc, where, getDoc, doc } from "firebase/firestore";
+
+interface ITroutineSets {
+  ExerciseName: string;
+  allExercisesUniqueID: string;
+  isEditing: boolean;
+  individualMyExerciseID: string;
+  objective: string;
+  routine: string;
+  type: string;
+  sets: ITset[];
+  myExUserCreator: string;
+}
 
 interface ITset {
   setCompleted: boolean;
@@ -23,8 +37,7 @@ export const ItemSet = (props: ItemSetIT) => {
   const {
     myRoutines = [],
     setMyRoutines = () => {},
-    doneActivities = [],
-    setDoneActivities = () => {},
+    isLoggedIn,
   } = useContext(RoutineContext) || {}; //getting the colors from the context
   //
 
@@ -38,7 +51,7 @@ export const ItemSet = (props: ItemSetIT) => {
           return {
             ...routine,
             routineExercises: routine.routineExercises.map((exercise) => {
-              if (exercise.myExerciseID === exerciseID) {
+              if (exercise.individualMyExerciseID === exerciseID) {
                 return {
                   ...exercise,
                   sets: updatedSets,
@@ -53,83 +66,70 @@ export const ItemSet = (props: ItemSetIT) => {
     );
   };
 
-  const handleReps = (repetitions: number) => {
+  const handleCounter = async (amount: number, variable: string) => {
     const updatedSets = myRoutines
       .find((routine) => routine.routineID === routineID)
       ?.routineExercises.find(
-        (exercise) => exercise.myExerciseID === exerciseID
+        (exercise) => exercise.individualMyExerciseID === exerciseID
       )
       ?.sets.map((set, i) => {
         if (i === index) {
-          return { ...set, reps: repetitions };
+          return { ...set, [variable]: amount };
         }
         return set;
       });
     if (updatedSets) {
       updateExerciseSets(updatedSets);
-    }
-  };
 
-  const handleWeights = (weightupd: number) => {
-    const updatedSets = myRoutines
-      .find((routine) => routine.routineID === routineID)
-      ?.routineExercises.find(
-        (exercise) => exercise.myExerciseID === exerciseID
-      )
-      ?.sets.map((set, i) => {
-        if (i === index) {
-          return { ...set, weight: weightupd };
-        }
-        return set;
-      });
-    if (updatedSets) {
-      updateExerciseSets(updatedSets);
-    }
-  };
+      // Update Firebase if connected
+      if (isLoggedIn) {
+        try {
+          const routineExerciseDocRef = doc(
+            db,
+            "myExercises",
+            `routine-${routineID}`
+          );
+          const routineExerciseDoc = await getDoc(routineExerciseDocRef);
 
-  const handleTime = (timeupd: number) => {
-    const updatedSets = myRoutines
-      .find((routine) => routine.routineID === routineID)
-      ?.routineExercises.find(
-        (exercise) => exercise.myExerciseID === exerciseID
-      )
-      ?.sets.map((set, i) => {
-        if (i === index) {
-          return { ...set, time: timeupd };
-        }
-        return set;
-      });
-    if (updatedSets) {
-      updateExerciseSets(updatedSets);
-    }
-  };
+          if (routineExerciseDoc.exists()) {
+            const routineExercisesData = routineExerciseDoc.data();
 
-  const handleDist = (distupd: number) => {
-    const updatedSets = myRoutines
-      .find((routine) => routine.routineID === routineID)
-      ?.routineExercises.find(
-        (exercise) => exercise.myExerciseID === exerciseID
-      )
-      ?.sets.map((set, i) => {
-        if (i === index) {
-          return { ...set, distance: distupd };
+            const updatedRoutineExercises =
+              routineExercisesData.routineExercises.map(
+                (exercise: ITroutineSets) => {
+                  if (exercise.individualMyExerciseID === exerciseID) {
+                    return {
+                      ...exercise,
+                      sets: updatedSets,
+                    };
+                  }
+                  return exercise;
+                }
+              );
+
+            await updateDoc(routineExerciseDocRef, {
+              routineExercises: updatedRoutineExercises,
+            });
+            console.log("Exercise sets updated in Firebase");
+          }
+        } catch (error) {
+          console.error("Error updating exercise sets:", error);
         }
-        return set;
-      });
-    if (updatedSets) {
-      updateExerciseSets(updatedSets);
+      }
     }
   };
 
   // Handle checkbox changes
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const { checked } = e.target;
     const updatedSets = myRoutines.map((routine) => {
       if (routine.routineID === routineID) {
         return {
           ...routine,
           routineExercises: routine.routineExercises.map((exercise) => {
-            if (exercise.myExerciseID === exerciseID) {
+            if (exercise.individualMyExerciseID === exerciseID) {
               return {
                 ...exercise,
                 sets: exercise.sets.map((set, i) => {
@@ -149,32 +149,50 @@ export const ItemSet = (props: ItemSetIT) => {
 
     setMyRoutines(updatedSets);
 
-    // Update doneData's completedSets
-    const matchingDoneData = doneActivities.find(
-      (doneData) =>
-        doneData.doneExerciseID === exerciseID &&
-        doneData.date === new Date().toLocaleDateString() &&
-        doneData.totalSets === index + 1
-    );
+    // Update Firebase if connected
+    if (isLoggedIn) {
+      try {
+        const routineExerciseDocRef = doc(
+          db,
+          "myExercises",
+          `routine-${routineID}`
+        );
+        const routineExerciseDoc = await getDoc(routineExerciseDocRef);
 
-    if (matchingDoneData) {
-      const updatedDoneActivities = doneActivities.map((doneData) =>
-        doneData.id === matchingDoneData.id
-          ? {
-              ...doneData,
-              completedSets: checked
-                ? doneData.completedSets + 1
-                : doneData.completedSets - 1,
-            }
-          : doneData
-      );
+        if (routineExerciseDoc.exists()) {
+          const routineExercisesData = routineExerciseDoc.data();
 
-      setDoneActivities(updatedDoneActivities);
+          const updatedRoutineExercises =
+            routineExercisesData.routineExercises.map(
+              (exercise: ITroutineSets) => {
+                if (exercise.individualMyExerciseID === exerciseID) {
+                  return {
+                    ...exercise,
+                    sets: exercise.sets.map((set, i) => {
+                      if (i === index) {
+                        return { ...set, setCompleted: checked };
+                      }
+                      return set;
+                    }),
+                  };
+                }
+                return exercise;
+              }
+            );
+
+          await updateDoc(routineExerciseDocRef, {
+            routineExercises: updatedRoutineExercises,
+          });
+          console.log("Exercise sets updated in Firebase");
+        }
+      } catch (error) {
+        console.error("Error updating exercise sets:", error);
+      }
     }
   };
 
+  // Save updated exercises and routines to localStorage
   useEffect(() => {
-    // Update localStorage whenever routines change
     localStorage.setItem("myRoutines", JSON.stringify(myRoutines));
   }, [myRoutines]);
 
@@ -197,7 +215,9 @@ export const ItemSet = (props: ItemSetIT) => {
               name="reps"
               id="reps"
               value={item.reps}
-              onChange={(e) => handleReps(parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                handleCounter(parseInt(e.target.value, 10), "reps")
+              }
             />
           </div>
           <label htmlFor="reps">Reps</label>
@@ -212,7 +232,9 @@ export const ItemSet = (props: ItemSetIT) => {
               name="time"
               id="time"
               value={item.time}
-              onChange={(e) => handleTime(parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                handleCounter(parseInt(e.target.value, 10), "time")
+              }
             />
           </div>
           <label htmlFor="time">
@@ -229,7 +251,9 @@ export const ItemSet = (props: ItemSetIT) => {
               name="distance"
               id="distance"
               value={item.distance}
-              onChange={(e) => handleDist(parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                handleCounter(parseInt(e.target.value, 10), "distance")
+              }
             />
           </div>
           <label htmlFor="distance">Km</label>
@@ -244,7 +268,9 @@ export const ItemSet = (props: ItemSetIT) => {
               name="weight"
               id="weight"
               value={item.weight}
-              onChange={(e) => handleWeights(parseInt(e.target.value, 10))}
+              onChange={(e) =>
+                handleCounter(parseInt(e.target.value, 10), "weight")
+              }
             />
           </div>
           <label htmlFor="weight">

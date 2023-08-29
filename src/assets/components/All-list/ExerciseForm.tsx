@@ -1,49 +1,78 @@
 import React, { useRef, useContext, useEffect } from "react";
 import { RoutineContext } from "../../../App";
 import { v4 as uuidv4 } from "uuid";
+import { auth, db } from "../../../config/firebase";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 interface AddExerciseIT {
   closeModal: () => void;
 }
 
 interface Exercise {
+  name: string;
   id: string;
   isEditing: boolean;
-  name: string;
   muscles: string[];
   linkImage: string;
   details: string;
+  userCreator: string;
 }
 
 export const ExerciseForm = (props: AddExerciseIT) => {
-  const { exerciseList = [], setExerciseList } =
-    useContext(RoutineContext) || {};
+  const {
+    exerciseList = [],
+    setExerciseList,
+    isLoggedIn,
+  } = useContext(RoutineContext) || {};
 
   const { closeModal } = props;
 
   const [exerciseName, setExerciseName] = React.useState("");
   const [linkImage, setLinkImage] = React.useState("");
-  const [muscles, setMuscles] = React.useState<string[]>([""]);
+  const [muscles, setMuscles] = React.useState<string[]>([]);
   const [details, setDetails] = React.useState("");
 
   const formRef = useRef<HTMLFormElement>(null);
 
   //create and add exercise to the list of exercises
-  const addExercise = (
+  const addExercise = async (
     exerciseName: string,
     muscles: string[],
     linkImage: string
   ) => {
+    const newExerciseID = uuidv4();
+
     if (!setExerciseList) return; // Guard against potential null reference
     const newExercise: Exercise = {
-      id: uuidv4(),
+      id: newExerciseID,
       isEditing: false,
       name: exerciseName,
       muscles: muscles,
       linkImage: linkImage,
       details: details, // Add this line with an empty string or provide relevant details
+      userCreator: auth.currentUser?.email || "", // Add this line with an empty string or provide relevant details
     };
     setExerciseList((prevExerciseList) => [...prevExerciseList, newExercise]);
+
+    if (isLoggedIn) {
+      try {
+        // Create a new Firestore collection reference
+        const gymCollectionRef = collection(db, "allExercises");
+
+        // Construct the document ID with the desired format
+        const documentId = `exercise-${newExerciseID}`;
+
+        // Create a reference to the document
+        const exerciseDocRef = doc(gymCollectionRef, documentId);
+
+        // Add the newTodo to Firestore
+        await setDoc(exerciseDocRef, newExercise);
+
+        console.log("sending to Firebase");
+      } catch (err) {
+        console.log(err);
+      }
+    }
   };
 
   const submitExercise = (e: React.FormEvent<HTMLFormElement>) => {

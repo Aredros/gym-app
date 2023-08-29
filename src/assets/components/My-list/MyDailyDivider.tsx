@@ -1,17 +1,14 @@
 import { ItemMyExercise } from "./RoutinePage/item-myExercise/ItemMyExercise";
 
 interface exerciseIT {
-  idExercise: string;
-  myExerciseID: string;
-  weekday: string;
+  allExercisesUniqueID: string;
   isEditing: boolean;
-  name: string;
-  muscles: string[];
-  linkImage: string;
-  objective: string; // Add the missing properties
+  individualMyExerciseID: string;
+  objective: string;
   routine: string;
   type: string;
   sets: ITset[];
+  myExUserCreator: string;
 }
 interface ITset {
   setCompleted: boolean;
@@ -37,7 +34,7 @@ export const MyDailyDivider = (props: ItemMyExerciseIT) => {
       <ul className="all-exercises-list">
         {exercises.map((exercise) => (
           <ItemMyExercise
-            key={exercise.myExerciseID}
+            key={exercise.individualMyExerciseID}
             exerciseItem={exercise}
             routineID={exercise.routine}
           />

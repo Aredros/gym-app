@@ -1,13 +1,23 @@
 import React, { useContext, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { RoutineContext } from "../../../../App";
+import { RoutineContext } from "../../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faEdit } from "@fortawesome/free-solid-svg-icons";
-import { CreateSetButton } from "../RoutinePage/item-myExercise/CreateSetButton";
-import { DeleteSetButton } from "../RoutinePage/item-myExercise/DeleteSetButton";
-import { ItemSet } from "../RoutinePage/item-myExercise/ItemSet";
-import { DeleteMyItemButton } from "../RoutinePage/item-myExercise/DeleteMyItemButton";
-import StretchImg from "../../../../stretching.png";
+import { CreateSetButton } from "../components/My-list/RoutinePage/item-myExercise/CreateSetButton";
+import { DeleteSetButton } from "../components/My-list/RoutinePage/item-myExercise/DeleteSetButton";
+import { ItemSet } from "../components/My-list/RoutinePage/item-myExercise/ItemSet";
+import { DeleteMyItemButton } from "../components/My-list/RoutinePage/item-myExercise/DeleteMyItemButton";
+import StretchImg from "../../stretching.png";
+
+interface AllListExercise {
+  id: string;
+  isEditing: boolean;
+  name: string;
+  muscles: string[];
+  linkImage: string;
+  details: string;
+  userCreator: string;
+}
 
 interface Routines {
   routineID: string;
@@ -15,20 +25,20 @@ interface Routines {
   routineName: string;
   routineImage: string;
   routineCompletion: number[];
-  routineExercises: IExerciseInfo[];
+  routineExercises: ITroutineSets[];
+  routineCreator: string;
 }
 
-interface IExerciseInfo {
-  idExercise: string;
+interface ITroutineSets {
+  ExerciseName: string;
+  allExercisesUniqueID: string;
   isEditing: boolean;
-  name: string;
-  muscles: string[];
-  linkImage: string;
-  myExerciseID: string;
+  individualMyExerciseID: string;
   objective: string;
   routine: string;
   type: string;
   sets: ITset[];
+  myExUserCreator: string;
 }
 
 interface ITset {
@@ -41,25 +51,31 @@ interface ITset {
 
 export const PageExerciseDetails = () => {
   const {
-    exerciseList = [],
+    exerciseList = [] as AllListExercise[],
     myRoutines = [] as Routines[],
     setMyRoutines = () => {},
-  } = useContext(RoutineContext) || {}; //getting the colors from the context
+  } = useContext(RoutineContext) || {};
 
   // Access the URL parameter using useParams hook
   const { myExerciseID } = useParams();
 
   // Initialize ExerciseFromRoutine variable to undefined
-  let ExerciseFromRoutine: IExerciseInfo | undefined;
+  let ExerciseFromRoutine: ITroutineSets | undefined;
 
   // Iterate through all routines and exercises to find the matching exercise
-  myRoutines.forEach((routine) => {
-    routine.routineExercises.forEach((exercise) => {
-      if (exercise.myExerciseID === myExerciseID) {
-        ExerciseFromRoutine = exercise;
-      }
+  if (myRoutines) {
+    myRoutines.forEach((routine) => {
+      routine.routineExercises?.forEach((exercise) => {
+        if (exercise.individualMyExerciseID === myExerciseID) {
+          ExerciseFromRoutine = exercise;
+        }
+      });
     });
-  });
+  }
+
+  const GeneralExerciseInfo: AllListExercise | undefined = exerciseList.find(
+    (exercise) => exercise.id === ExerciseFromRoutine?.allExercisesUniqueID
+  );
 
   //Check if OBJECTIVE of the exercise is being edited or not
   const [editObjective, setEditObjective] = useState(false);
@@ -73,11 +89,14 @@ export const PageExerciseDetails = () => {
       const updatedRoutines = prevRoutines.map((routine) => {
         if (routine.routineID === ExerciseFromRoutine?.routine) {
           const updatedExercises = routine.routineExercises.map((exercise) => {
-            if (exercise.myExerciseID === ExerciseFromRoutine?.myExerciseID) {
+            if (
+              exercise.individualMyExerciseID ===
+              ExerciseFromRoutine?.individualMyExerciseID
+            ) {
               return {
                 ...exercise,
                 objective: objectiveTextState,
-              } as IExerciseInfo;
+              } as ITroutineSets;
             }
             return exercise;
           });
@@ -99,7 +118,10 @@ export const PageExerciseDetails = () => {
       const updatedRoutines = prevRoutines.map((routine) => {
         if (routine.routineID === ExerciseFromRoutine?.routine) {
           const updatedExercises = routine.routineExercises.map((exercise) => {
-            if (exercise.myExerciseID === ExerciseFromRoutine?.myExerciseID) {
+            if (
+              exercise.individualMyExerciseID ===
+              ExerciseFromRoutine?.individualMyExerciseID
+            ) {
               return { ...exercise, type: newType };
             }
             return exercise;
@@ -125,7 +147,7 @@ export const PageExerciseDetails = () => {
         <div className="main-exercises">
           <div className="PageExerciseDetails-header">
             <FontAwesomeIcon icon={faArrowLeft} onClick={goBack} />
-            {ExerciseFromRoutine && <h2>{ExerciseFromRoutine.name}</h2>}
+            {GeneralExerciseInfo && <h2>{GeneralExerciseInfo.name}</h2>}
           </div>
 
           <div className="page-exercise">
@@ -134,27 +156,23 @@ export const PageExerciseDetails = () => {
               <div className="page-exercise__area1__image">
                 <img
                   src={
-                    ExerciseFromRoutine?.linkImage === ""
+                    GeneralExerciseInfo?.linkImage === ""
                       ? StretchImg
-                      : ExerciseFromRoutine?.linkImage
+                      : GeneralExerciseInfo?.linkImage
                   }
-                  alt={ExerciseFromRoutine?.name}
+                  alt={GeneralExerciseInfo?.name}
                 />
               </div>
               <div className="page-exercise__area1__general-details">
                 <div className="details-muscle">
                   {" "}
-                  {ExerciseFromRoutine?.muscles.map((muscle) => (
+                  {GeneralExerciseInfo?.muscles.map((muscle) => (
                     <p key={muscle}>{muscle}</p>
                   ))}
                 </div>
 
                 <p className="details-description">
-                  {exerciseList.map((exercise) => {
-                    if (exercise.id === ExerciseFromRoutine?.idExercise) {
-                      return exercise.details;
-                    }
-                  })}
+                  {GeneralExerciseInfo?.details}
                 </p>
               </div>
             </div>
@@ -213,16 +231,19 @@ export const PageExerciseDetails = () => {
                   </div>
                   <div className="page-exercise__area2__sets__controls__moreOrLess">
                     {ExerciseFromRoutine?.routine &&
-                      ExerciseFromRoutine?.myExerciseID && (
+                      ExerciseFromRoutine?.individualMyExerciseID && (
                         <>
                           <CreateSetButton
-                            exerciseID={ExerciseFromRoutine.myExerciseID}
+                            exerciseID={
+                              ExerciseFromRoutine.individualMyExerciseID
+                            }
                             routineID={ExerciseFromRoutine.routine}
                           />
                           <DeleteSetButton
-                            exerciseID={ExerciseFromRoutine.myExerciseID}
+                            exerciseID={
+                              ExerciseFromRoutine.individualMyExerciseID
+                            }
                             routineID={ExerciseFromRoutine.routine}
-                            exerciseItem={ExerciseFromRoutine}
                           />
                         </>
                       )}
@@ -230,15 +251,17 @@ export const PageExerciseDetails = () => {
                 </div>
                 <div className="page-exercise__area2__sets__sets">
                   {ExerciseFromRoutine?.routine &&
-                    ExerciseFromRoutine?.myExerciseID &&
+                    ExerciseFromRoutine?.individualMyExerciseID &&
                     setsOFsameExercise?.map((each, index) => (
                       <ItemSet
-                        key={`item-set-${index}-${ExerciseFromRoutine?.myExerciseID}`}
+                        key={`item-set-${index}-${ExerciseFromRoutine?.individualMyExerciseID}`}
                         item={each}
                         type={ExerciseFromRoutine?.type || ""}
                         index={index}
                         routineID={ExerciseFromRoutine?.routine || ""}
-                        exerciseID={ExerciseFromRoutine?.myExerciseID || ""}
+                        exerciseID={
+                          ExerciseFromRoutine?.individualMyExerciseID || ""
+                        }
                       />
                     ))}
                 </div>

@@ -1,6 +1,6 @@
 import React, { useRef, useContext } from "react";
-import { ExerciseForm } from "./All-list/ExerciseForm";
-import { ItemExercise } from "./All-list/Item-exercise/ItemExercise";
+import { ExerciseForm } from "../components/All-list/ExerciseForm";
+import { ItemExercise } from "../components/All-list/Item-exercise/ItemExercise";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { RoutineContext } from "../../App";

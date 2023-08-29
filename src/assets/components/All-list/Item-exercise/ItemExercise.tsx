@@ -3,16 +3,39 @@ import { EditItemExercise } from "./EditItemExercise";
 import { ItemImage } from "./ItemImage";
 import { RoutineContext } from "../../../../App";
 import { DeleteItemExerciseButton } from "./DeleteItemExerciseButton";
-import { v4 as uuidv4 } from "uuid";
 import { StartEditingItemExerciseButton } from "./StartEditingItemExerciseButton";
+import { auth, db } from "../../../../config/firebase";
+import { updateDoc, getDoc, doc } from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
+
+interface ITroutineSets {
+  ExerciseName: string;
+  allExercisesUniqueID: string;
+  isEditing: boolean;
+  individualMyExerciseID: string;
+  objective: string;
+  routine: string;
+  type: string;
+  sets: ITset[];
+  myExUserCreator: string;
+}
+interface ITset {
+  setCompleted: boolean;
+  reps: number;
+  weight: number;
+  distance: number;
+  time: number;
+}
 
 interface ItemExerciteIT {
   exercise: {
     id: string;
+    isEditing: boolean;
     name: string;
     muscles: string[];
     linkImage: string;
     details: string;
+    userCreator: string;
   };
 }
 
@@ -21,15 +44,14 @@ export const ItemExercise = (props: ItemExerciteIT) => {
     exerciseList = [],
     myRoutines = [],
     setMyRoutines = () => {},
-    doneActivities = [],
-    setDoneActivities = () => {},
+    isLoggedIn,
   } = useContext(RoutineContext) || {}; //getting the colors from the context
 
   const { exercise } = props;
 
   //states
   const [routineToChoose, setRoutineToChoose] = React.useState(
-    myRoutines.length > 0 ? myRoutines[0].routineName : ""
+    myRoutines.length > 0 ? myRoutines[0].routineID : ""
   );
 
   const editRef = useRef<HTMLDialogElement | null>(null);
@@ -41,7 +63,7 @@ export const ItemExercise = (props: ItemExerciteIT) => {
   };
 
   //Add Exercise to my personal list routine
-  const addMyExercise = (
+  const addMyExercise = async (
     selectedExerciseId: string,
     selectedRoutineID: string
   ) => {
@@ -49,14 +71,13 @@ export const ItemExercise = (props: ItemExerciteIT) => {
     const selectedExercise = exerciseList.find(
       (exercise) => exercise.id === selectedExerciseId
     );
+
     if (selectedExercise) {
-      const updatedExercise = {
-        idExercise: selectedExercise.id, // Add the 'id' property
+      const newMyExercise: ITroutineSets = {
+        ExerciseName: selectedExercise.name, // Add the 'name' property
+        allExercisesUniqueID: selectedExercise.id, // Add the 'id' property
         isEditing: false, // Add the 'isEditing' property
-        name: selectedExercise.name,
-        muscles: selectedExercise.muscles,
-        linkImage: selectedExercise.linkImage,
-        myExerciseID: uuidv4(), // Add the 'myExerciseID' property
+        individualMyExerciseID: uuidv4(), // Add the 'myExerciseID' property
         objective: "",
         routine: selectedRoutineID, // Add the 'routine' property
         type: "Cardio",
@@ -69,23 +90,52 @@ export const ItemExercise = (props: ItemExerciteIT) => {
             time: 0,
           },
         ],
+        myExUserCreator: auth.currentUser?.email || "",
       };
-      const selectedRoutine = myRoutines.find(
-        (chosenRoutine) => chosenRoutine.routineID === selectedRoutineID
+
+      const updatedRoutines = myRoutines.map((eachRoutine) =>
+        eachRoutine.routineID === selectedRoutineID
+          ? {
+              ...eachRoutine,
+              routineExercises: [
+                ...eachRoutine.routineExercises,
+                newMyExercise,
+              ],
+            }
+          : eachRoutine
       );
-      if (selectedRoutine) {
-        const updatedExercises = [
-          ...selectedRoutine.routineExercises,
-          updatedExercise,
-        ];
 
-        const updatedRoutines = myRoutines.map((chosenRoutine) =>
-          chosenRoutine.routineID === selectedRoutineID
-            ? { ...chosenRoutine, routineExercises: updatedExercises }
-            : chosenRoutine
-        );
+      setMyRoutines(updatedRoutines);
 
-        setMyRoutines(updatedRoutines);
+      if (isLoggedIn) {
+        try {
+          // Create a new Firestore document reference for the routine
+          const routineDocRef = doc(
+            db,
+            "myExercises",
+            `routine-${selectedRoutineID}`
+          );
+
+          // Get the routine document from Firestore
+          const routineDoc = await getDoc(routineDocRef);
+
+          if (routineDoc.exists()) {
+            // Update the routineExercises array with the newMyExercise
+            const updatedRoutineExercises = [
+              ...routineDoc.data().routineExercises,
+              newMyExercise,
+            ];
+
+            // Update the routineExercises field in the routine document
+            await updateDoc(routineDocRef, {
+              routineExercises: updatedRoutineExercises,
+            });
+
+            console.log("Exercise added to the routine in Firebase");
+          }
+        } catch (err) {
+          console.log(`not added` + err);
+        }
       }
     }
   };
@@ -98,10 +148,6 @@ export const ItemExercise = (props: ItemExerciteIT) => {
 
   // Generate a unique key for each EditItemExercise component
   const editItemKey = `edit-item-${exercise.id}-${exercise.name}`;
-
-  if (!myRoutines || myRoutines.length === 0) {
-    return null; // or return a placeholder/error message
-  }
 
   return (
     <li className="Item-exercise" key={exercise.id}>
@@ -129,7 +175,7 @@ export const ItemExercise = (props: ItemExerciteIT) => {
               {myRoutines.map((chosenRoutine) => {
                 return (
                   <option
-                    key={chosenRoutine.routineID}
+                    key={`${chosenRoutine.routineID}-${chosenRoutine.routineName}`}
                     value={chosenRoutine.routineID}
                   >
                     {chosenRoutine.routineName}

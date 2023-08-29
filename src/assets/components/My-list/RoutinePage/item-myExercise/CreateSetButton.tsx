@@ -1,5 +1,19 @@
 import React, { useContext } from "react";
 import { RoutineContext } from "../../../../../App";
+import { auth, db } from "../../../../../config/firebase";
+import { updateDoc, where, getDoc, doc } from "firebase/firestore";
+
+interface ITroutineSets {
+  ExerciseName: string;
+  allExercisesUniqueID: string;
+  isEditing: boolean;
+  individualMyExerciseID: string;
+  objective: string;
+  routine: string;
+  type: string;
+  sets: ITset[];
+  myExUserCreator: string;
+}
 
 interface ITset {
   setCompleted: boolean;
@@ -14,68 +28,80 @@ interface ITcreateSet {
   routineID: string;
 }
 
-interface doneDataDetails {
-  date: string;
-  id: string;
-  doneExerciseID: string;
-  routineID: string;
-  totalSets: number;
-  completedSets: number;
-}
-
 export const CreateSetButton = (props: ITcreateSet) => {
   const {
     myRoutines = [],
     setMyRoutines = () => {},
-    doneActivities = [],
-    setDoneActivities = () => {},
+    isLoggedIn,
   } = useContext(RoutineContext) || {};
 
   const { exerciseID, routineID } = props;
 
   // Create a new set and add it to the selected exercise in the routine
-  const createSet = () => {
-    setMyRoutines((prevMyRoutines) =>
-      prevMyRoutines.map((routine) => {
-        if (routine.routineID === routineID) {
-          return {
-            ...routine,
-            routineExercises: routine.routineExercises.map((exercise) => {
-              if (exercise.myExerciseID === exerciseID) {
-                const newSet: ITset = {
-                  setCompleted: false,
-                  reps: 0,
-                  weight: 0,
-                  distance: 0,
-                  time: 0,
-                };
-                return {
-                  ...exercise,
-                  sets: [...exercise.sets, newSet],
-                };
+  const createSet = async () => {
+    //new empty Set that is going to be added to the exercise after clicking the button
+    const newSet: ITset = {
+      setCompleted: false,
+      reps: 0,
+      weight: 0,
+      distance: 0,
+      time: 0,
+    };
+
+    const routineUpdate = myRoutines.map((routine) => {
+      if (routine.routineID === routineID) {
+        return {
+          ...routine,
+          routineExercises: routine.routineExercises.map((exercise) => {
+            if (exercise.individualMyExerciseID === exerciseID) {
+              return {
+                ...exercise,
+                sets: [...exercise.sets, newSet],
+              };
+            }
+            return exercise;
+          }),
+        };
+      }
+      return routine;
+    });
+    setMyRoutines(routineUpdate);
+    // If connected then send to Firebase
+    if (isLoggedIn) {
+      try {
+        const routineExerciseDocRef = doc(
+          db,
+          "myExercises",
+          `routine-${routineID}`
+        );
+
+        const routineExerciseDoc = await getDoc(routineExerciseDocRef);
+
+        if (routineExerciseDoc.exists()) {
+          const routineExercisesData = routineExerciseDoc.data();
+
+          const updatedRoutineExercises =
+            routineExercisesData.routineExercises.map(
+              (exercise: ITroutineSets) => {
+                if (exercise.individualMyExerciseID === exerciseID) {
+                  return {
+                    ...exercise,
+                    sets: [...exercise.sets, newSet],
+                  };
+                }
+                return exercise;
               }
-              return exercise;
-            }),
-          };
+            );
+
+          await updateDoc(routineExerciseDocRef, {
+            routineExercises: updatedRoutineExercises,
+          });
+          console.log("Set added to the exercise in Firebase");
         }
-        return routine;
-      })
-    );
-    //now create a new item in the doneData state
-    setDoneActivities((prevDoneActivities) =>
-      prevDoneActivities.map((doneActivity) => {
-        if (
-          doneActivity.doneExerciseID === exerciseID &&
-          doneActivity.date === new Date().toLocaleDateString()
-        ) {
-          return {
-            ...doneActivity,
-            totalSets: doneActivity.totalSets + 1,
-          };
-        }
-        return doneActivity;
-      })
-    );
+      } catch (error) {
+        console.error("Error updating exercise sets:", error);
+      }
+    }
   };
 
   return (

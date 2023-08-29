@@ -1,4 +1,8 @@
 import React, { useEffect, useState, createContext } from "react";
+import { Auth } from "./assets/pages/auth";
+import { auth, db } from "./config/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import django from "./Djangocircle.png";
 import "./App.css";
 import "./styles.scss";
@@ -6,18 +10,13 @@ import "./assets/Styles/Page-exercise-details.scss";
 import "./assets/Styles/add-form-styles.scss";
 import { Navigation } from "./assets/components/Navigation/Navigation";
 
-import {
-  useNavigate,
-  BrowserRouter,
-  Routes,
-  Route,
-  HashRouter,
-} from "react-router-dom";
-import { AllExercises } from "./assets/components/AllExercises";
-import { MyExercises } from "./assets/components/MyExercises";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AllExercises } from "./assets/pages/AllExercises";
+import { MyExercises } from "./assets/pages/MyExercises";
 import PersonalLinks from "./assets/components/Navigation/PersonalLinks";
-import { PageExerciseDetails } from "./assets/components/My-list/Page-Exercise-Details/PageExerciseDetails";
-import { RoutinePage } from "./assets/components/My-list/RoutinePage/RoutinePage";
+import { PageExerciseDetails } from "./assets/pages/PageExerciseDetails";
+import { RoutinePage } from "./assets/pages/RoutinePage";
+import DbAndLogOut from "./assets/components/Navigation/DbAndLogOut";
 
 // import addNotification from "react-push-notification";
 
@@ -28,6 +27,7 @@ interface Exercise {
   muscles: string[];
   linkImage: string;
   details: string;
+  userCreator: string;
 }
 interface Routines {
   routineID: string;
@@ -36,18 +36,18 @@ interface Routines {
   routineImage: string;
   routineCompletion: number[];
   routineExercises: ITroutineSets[];
+  routineCreator: string;
 }
 interface ITroutineSets {
-  idExercise: string;
+  ExerciseName: string;
+  allExercisesUniqueID: string;
   isEditing: boolean;
-  name: string;
-  muscles: string[];
-  linkImage: string;
-  myExerciseID: string;
+  individualMyExerciseID: string;
   objective: string;
   routine: string;
   type: string;
   sets: ITset[];
+  myExUserCreator: string;
 }
 
 interface ITset {
@@ -65,6 +65,7 @@ interface doneDataDetails {
   routineID: string;
   totalSets: number;
   completedSets: number;
+  creatorDoneData: string;
 }
 
 interface GeneralContextFiles {
@@ -74,6 +75,7 @@ interface GeneralContextFiles {
   setMyRoutines: React.Dispatch<React.SetStateAction<Routines[]>>;
   doneActivities: doneDataDetails[];
   setDoneActivities: React.Dispatch<React.SetStateAction<doneDataDetails[]>>;
+  isLoggedIn: boolean;
 }
 
 //crearting context that will pass the colors and doneTodoList
@@ -83,53 +85,12 @@ export const RoutineContext = createContext<GeneralContextFiles | undefined>(
 
 function App() {
   const [loading, setLoading] = useState(false);
-  const [exerciseList, setExerciseList] = useState<Exercise[]>(() =>
-    JSON.parse(localStorage.getItem("exerciseList") || "[]")
-  );
-  const [myRoutines, setMyRoutines] = useState<Routines[]>(() => {
-    const storedData = localStorage.getItem("myRoutines");
-    return storedData
-      ? JSON.parse(storedData)
-      : [
-          {
-            routineID: "001",
-            isEditing: false,
-            routineName: "Default-routine",
-            routineImage: "",
-            routineCompletion: [100, 50, 0],
-            routineExercises: [
-              {
-                isEditing: false,
-                name: "Bench Press",
-                muscles: ["Chest"],
-                linkImage: "",
-                myExerciseID: "0011",
-                objective: "10 sets 5reps 5kilos",
-                routine: "Default-routine",
-                type: "RPT",
-                sets: [
-                  {
-                    setCompleted: false,
-                    reps: 5,
-                    weight: 50,
-                    distance: 0,
-                    time: 0,
-                  },
-                  {
-                    setCompleted: false,
-                    reps: 15,
-                    weight: 55,
-                    distance: 0,
-                    time: 0,
-                  },
-                ],
-              },
-            ],
-          },
-        ];
-  });
+  const [isLoggedIn, setIsLoggedIn] = useState(false); //check if the user is logged in or not
+  const [isAuthenticated, setIsAuthenticated] = useState(false); //check if it is an anonymous user or not
+  const [exerciseList, setExerciseList] = useState<Exercise[]>([]);
+  const [myRoutines, setMyRoutines] = useState<Routines[]>([]);
   const [doneActivities, setDoneActivities] = React.useState<doneDataDetails[]>(
-    () => JSON.parse(localStorage.getItem("localDoneActivities") || "[]")
+    []
   );
 
   //get all exercises stored into the localStorage
@@ -139,36 +100,164 @@ function App() {
       setLoading(false);
     }, 4000);
 
-    const StoredIntoLocalExerciseList = localStorage.getItem("exerciseList");
-    if (StoredIntoLocalExerciseList) {
-      setExerciseList(JSON.parse(StoredIntoLocalExerciseList));
-    }
+    //Verifying if the user is Anon or not
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsLoggedIn(user ? !user.isAnonymous : false);
+    });
 
-    const MyStoredIntoLocalRoutines = localStorage.getItem("myRoutines");
-    if (MyStoredIntoLocalRoutines) {
-      setMyRoutines(JSON.parse(MyStoredIntoLocalRoutines));
-    }
-
-    const MyStoredIntoLocalDoneActivities = localStorage.getItem(
-      "localDoneActivities"
-    );
-    if (MyStoredIntoLocalDoneActivities) {
-      setDoneActivities(JSON.parse(MyStoredIntoLocalDoneActivities));
-    }
+    return () => {
+      unsubscribe();
+    };
 
     //empty array and local storage
     // localStorage.clear();
   }, []);
 
-  // Save updated exerciseList to localStorage
-  useEffect(() => {
-    localStorage.setItem("exerciseList", JSON.stringify(exerciseList));
-  }, [exerciseList]);
-
   // Save updated myRoutines to localStorage
   useEffect(() => {
-    localStorage.setItem("myRoutines", JSON.stringify(myRoutines));
-  }, [myRoutines]);
+    // Get ALL Exercises from Firestore //
+    const getExerciseListDataFromDatabase = async () => {
+      try {
+        if (auth.currentUser) {
+          // Get the current user's email
+          const userEmail = auth.currentUser.email;
+          // Create a query to fetch todos where the user is the same as the current user
+          const q = query(
+            collection(db, "allExercises"),
+            where("userCreator", "==", userEmail),
+            where("userCreator", "!=", "")
+          );
+
+          // Get the documents that match the query
+          const querySnapshot = await getDocs(q);
+
+          // Map the documents to an array of todos
+          const typesFromDatabase: Exercise[] = [];
+          const typeIds: Set<string> = new Set(); // Set to track unique todo IDs
+
+          querySnapshot.docs.forEach((doc) => {
+            const type = doc.data() as Exercise; // Cast the document data to ITodo
+            if (!typeIds.has(type.id)) {
+              // Check if the todo ID is already in the set
+              typesFromDatabase.push(type);
+              typeIds.add(type.id); // Add the todo ID to the set
+            }
+          });
+
+          // Update the todos state with the retrieved todos
+          setExerciseList(typesFromDatabase);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    //GET ALL MY ROUTINES FROM FIRESTORE //
+    const getMyRoutinesDataFromDatabase = async () => {
+      try {
+        if (auth.currentUser) {
+          // Get the current user's email
+          const userEmail = auth.currentUser.email;
+          // Create a query to fetch todos where the user is the same as the current user
+          const q = query(
+            collection(db, "myExercises"),
+            where("routineCreator", "==", userEmail),
+            where("routineCreator", "!=", "")
+          );
+
+          // Get the documents that match the query
+          const querySnapshot = await getDocs(q);
+
+          // Map the documents to an array of todos
+          const routinesFromDatabase: Routines[] = [];
+          const typeIds: Set<string> = new Set(); // Set to track unique todo IDs
+
+          querySnapshot.docs.forEach((doc) => {
+            const rout = doc.data() as Routines; // Cast the document data to ITodo
+            if (!typeIds.has(rout.routineID)) {
+              // Check if the todo ID is already in the set
+              routinesFromDatabase.push(rout);
+              typeIds.add(rout.routineID); // Add the todo ID to the set
+            }
+          });
+
+          // Update the todos state with the retrieved todos
+          setMyRoutines(routinesFromDatabase);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    //GET ALL MY ROUTINES FROM FIRESTORE //
+    const getDoneActivitiesDataFromDatabase = async () => {
+      try {
+        if (auth.currentUser) {
+          // Get the current user's email
+          const userEmail = auth.currentUser.email;
+          // Create a query to fetch todos where the user is the same as the current user
+          const q = query(
+            collection(db, "doneActivities"),
+            where("creatorDoneData", "==", userEmail),
+            where("creatorDoneData", "!=", "")
+          );
+
+          // Get the documents that match the query
+          const querySnapshot = await getDocs(q);
+
+          // Map the documents to an array of todos
+          const doneActFromDatabase: doneDataDetails[] = [];
+          const typeIds: Set<string> = new Set(); // Set to track unique todo IDs
+
+          querySnapshot.docs.forEach((doc) => {
+            const doneAc = doc.data() as doneDataDetails; // Cast the document data to ITodo
+            if (!typeIds.has(doneAc.id)) {
+              // Check if the todo ID is already in the set
+              doneActFromDatabase.push(doneAc);
+              typeIds.add(doneAc.id); // Add the todo ID to the set
+            }
+          });
+
+          // Update the todos state with the retrieved todos
+          setDoneActivities(doneActFromDatabase);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    if (isLoggedIn) {
+      getExerciseListDataFromDatabase();
+      getMyRoutinesDataFromDatabase();
+      getDoneActivitiesDataFromDatabase();
+    } else {
+      const storedAllExercises = localStorage.getItem("exerciseList") || "[]";
+      const storedMyExercises = localStorage.getItem("myRoutines") || "[]";
+      const storedDoneData =
+        localStorage.getItem("localDoneActivities") || "[]";
+      try {
+        // Fetch all exercises from LocalStorage
+        setExerciseList(JSON.parse(storedAllExercises));
+        // Fetch all my routines from LocalStorage
+        setMyRoutines(JSON.parse(storedMyExercises));
+        // Fetch all done Data from LocalStorage
+        setDoneActivities(JSON.parse(storedDoneData));
+      } catch (error) {
+        console.log("Error parsing stored Exercise data:", error);
+      }
+    }
+  }, [isLoggedIn]);
+
+  //useEffect used to  check if the user is authenticated or not
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    });
+    // Cleanup function to unsubscribe from the listener
+    return () => unsubscribe();
+  }, []);
 
   return (
     <RoutineContext.Provider
@@ -179,6 +268,7 @@ function App() {
         setMyRoutines,
         doneActivities,
         setDoneActivities,
+        isLoggedIn,
       }}
     >
       <div className="App">
@@ -211,25 +301,29 @@ function App() {
           <>
             <PersonalLinks />
             <h1>Gym list</h1>
+            {isAuthenticated ? (
+              <BrowserRouter basename="/gym-app">
+                <div>
+                  <Navigation />
 
-            <BrowserRouter basename="/gym-app">
-              <div>
-                <Navigation />
-
-                <Routes>
-                  <Route path="/" element={<MyExercises />} />
-                  <Route path="/all-exercises" element={<AllExercises />} />
-                  <Route
-                    path={`/myexerciseDetails/:myExerciseID`}
-                    element={<PageExerciseDetails />}
-                  />
-                  <Route
-                    path={`/routine/:routineID`}
-                    element={<RoutinePage />}
-                  />
-                </Routes>
-              </div>
-            </BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<MyExercises />} />
+                    <Route path="/all-exercises" element={<AllExercises />} />
+                    <Route
+                      path={`/myexerciseDetails/:myExerciseID`}
+                      element={<PageExerciseDetails />}
+                    />
+                    <Route
+                      path={`/routine/:routineID`}
+                      element={<RoutinePage />}
+                    />
+                  </Routes>
+                  <DbAndLogOut />
+                </div>
+              </BrowserRouter>
+            ) : (
+              <Auth />
+            )}
           </>
         )}
       </div>
