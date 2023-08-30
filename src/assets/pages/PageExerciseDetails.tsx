@@ -7,6 +7,8 @@ import { CreateSetButton } from "../components/My-list/RoutinePage/item-myExerci
 import { DeleteSetButton } from "../components/My-list/RoutinePage/item-myExercise/DeleteSetButton";
 import { ItemSet } from "../components/My-list/RoutinePage/item-myExercise/ItemSet";
 import { DeleteMyItemButton } from "../components/My-list/RoutinePage/item-myExercise/DeleteMyItemButton";
+import { auth, db } from "../../config/firebase";
+import { updateDoc, getDoc, doc } from "firebase/firestore";
 import StretchImg from "../../stretching.png";
 
 interface AllListExercise {
@@ -84,54 +86,135 @@ export const PageExerciseDetails = () => {
     ExerciseFromRoutine?.objective
   );
 
-  const handleObjective = () => {
-    setMyRoutines((prevRoutines: Routines[]) => {
-      const updatedRoutines = prevRoutines.map((routine) => {
-        if (routine.routineID === ExerciseFromRoutine?.routine) {
-          const updatedExercises = routine.routineExercises.map((exercise) => {
-            if (
-              exercise.individualMyExerciseID ===
-              ExerciseFromRoutine?.individualMyExerciseID
-            ) {
-              return {
-                ...exercise,
-                objective: objectiveTextState,
-              } as ITroutineSets;
-            }
-            return exercise;
-          });
-          return { ...routine, routineExercises: updatedExercises } as Routines;
-        }
-        return routine;
-      });
-      return updatedRoutines;
+  const handleObjective = async () => {
+    // Update local state
+    const updatedRoutines = myRoutines.map((routine) => {
+      if (routine.routineID === ExerciseFromRoutine?.routine) {
+        const updatedExercises = routine.routineExercises.map((exercise) => {
+          if (
+            exercise.individualMyExerciseID ===
+            ExerciseFromRoutine?.individualMyExerciseID
+          ) {
+            return {
+              ...exercise,
+              objective: objectiveTextState,
+            } as ITroutineSets;
+          }
+          return exercise;
+        });
+        return { ...routine, routineExercises: updatedExercises } as Routines;
+      }
+      return routine;
     });
+
+    setMyRoutines(updatedRoutines);
     setEditObjective(false);
+
+    if (ExerciseFromRoutine) {
+      try {
+        // Create a new Firestore document reference for the routine
+        const routineDocRef = doc(
+          db,
+          "myExercises",
+          `routine-${ExerciseFromRoutine.routine}`
+        );
+
+        // Get the routine document from Firestore
+        const routineDoc = await getDoc(routineDocRef);
+
+        if (routineDoc.exists()) {
+          // Update the routineExercises array with the updated exercise
+          const updatedRoutineExercises = routineDoc
+            .data()
+            .routineExercises.map((exercise: ITroutineSets) => {
+              if (
+                exercise.individualMyExerciseID ===
+                ExerciseFromRoutine?.individualMyExerciseID
+              ) {
+                return {
+                  ...exercise,
+                  objective: objectiveTextState,
+                };
+              }
+              return exercise;
+            });
+
+          // Update the routineExercises field in the routine document
+          await updateDoc(routineDocRef, {
+            routineExercises: updatedRoutineExercises,
+          });
+
+          console.log("Exercise objective updated in Firebase");
+        }
+      } catch (err) {
+        console.log("Error updating exercise objective in Firebase:", err);
+      }
+    }
   };
 
   // Update the type in the corresponding exerciseItem from myRoutines
-  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleTypeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newType = e.target.value;
 
-    // Update the type in the corresponding exerciseItem from myRoutines
-    setMyRoutines((prevRoutines) => {
-      const updatedRoutines = prevRoutines.map((routine) => {
-        if (routine.routineID === ExerciseFromRoutine?.routine) {
-          const updatedExercises = routine.routineExercises.map((exercise) => {
-            if (
-              exercise.individualMyExerciseID ===
-              ExerciseFromRoutine?.individualMyExerciseID
-            ) {
-              return { ...exercise, type: newType };
-            }
-            return exercise;
-          });
-          return { ...routine, routineExercises: updatedExercises };
-        }
-        return routine;
-      });
-      return updatedRoutines;
+    const updatedRoutines = myRoutines.map((routine) => {
+      if (routine.routineID === ExerciseFromRoutine?.routine) {
+        const updatedExercises = routine.routineExercises.map((exercise) => {
+          if (
+            exercise.individualMyExerciseID ===
+            ExerciseFromRoutine?.individualMyExerciseID
+          ) {
+            return { ...exercise, type: newType };
+          }
+          return exercise;
+        });
+        return { ...routine, routineExercises: updatedExercises };
+      }
+      return routine;
     });
+
+    // Update the type in the corresponding exerciseItem from myRoutines
+    setMyRoutines(updatedRoutines);
+
+    if (ExerciseFromRoutine) {
+      try {
+        // Create a new Firestore document reference for the routine
+        const routineDocRef = doc(
+          db,
+          "myExercises",
+          `routine-${ExerciseFromRoutine.routine}`
+        );
+
+        // Get the routine document from Firestore
+        const routineDoc = await getDoc(routineDocRef);
+
+        if (routineDoc.exists()) {
+          // Update the routineExercises array with the updated exercise type
+          const updatedRoutineExercises = routineDoc
+            .data()
+            .routineExercises.map((exercise: ITroutineSets) => {
+              if (
+                exercise.individualMyExerciseID ===
+                ExerciseFromRoutine?.individualMyExerciseID
+              ) {
+                return {
+                  ...exercise,
+                  type: newType,
+                };
+              }
+              return exercise;
+            });
+
+          // Update the routineExercises field in the routine document
+          await updateDoc(routineDocRef, {
+            routineExercises: updatedRoutineExercises,
+          });
+
+          console.log("Exercise type updated in Firebase");
+        }
+      } catch (err) {
+        console.log("Error updating exercise type in Firebase:", err);
+      }
+    }
   };
 
   const setsOFsameExercise = ExerciseFromRoutine?.sets || []; // Assuming 'sets' is an array of sets in IExerciseInfo
