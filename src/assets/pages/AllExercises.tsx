@@ -1,4 +1,6 @@
-import React, { useRef, useContext } from "react";
+import { useRef, useContext } from "react";
+import "../../assets/Styles/pages/all-pages.scss";
+import "../../assets/Styles/pages/all-exercises.scss";
 import { ExerciseForm } from "../components/All-list/ExerciseForm";
 import { ItemExercise } from "../components/All-list/Item-exercise/ItemExercise";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,7 +22,7 @@ export const AllExercises = () => {
   };
 
   return (
-    <div>
+    <div className="main-columns-divide__main-area">
       <div className="main-exercises">
         <h2>All Exercises</h2>
         <span className="button-with-text" onClick={openModal}>

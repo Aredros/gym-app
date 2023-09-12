@@ -1,0 +1,35 @@
+//All pages
+
+.main-exercises {
+  background: #fff;
+  position: relative;
+  color: black;
+  padding: 10px 2px;
+  border-radius: 0 8px 8px 8px;
+  -webkit-border-radius: 0 8px 8px 8px;
+  -moz-border-radius: 0 8px 8px 8px;
+  -ms-border-radius: 0 8px 8px 8px;
+  -o-border-radius: 0 8px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  .button-with-text {
+    width: 80px;
+    color: white;
+    background-color: black;
+    padding: 5px 13px 5px 10px;
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+  }
+  .start-routine-button {
+    margin-top: 40px;
+  }
+}
+
+@media screen and (min-width: 780px) {
+  .main-exercises {
+    padding: 10px 25px;
+  }
+}

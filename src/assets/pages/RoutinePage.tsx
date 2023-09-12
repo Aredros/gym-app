@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import "../../assets/Styles/pages/all-pages.scss";
 import { useParams } from "react-router-dom";
 import { ItemMyExercise } from "../components/My-list/RoutinePage/item-myExercise/ItemMyExercise";
 import { RoutineContext } from "../../App";
@@ -169,7 +170,7 @@ export const RoutinePage = () => {
   }, [doneActivities]);
 
   return (
-    <div>
+    <div className="main-columns-divide__main-area">
       <div className="main-exercises">
         <div key={`key-${validRoutineID}`}>
           <TitleRoutinePage validRoutineID={validRoutineID} />

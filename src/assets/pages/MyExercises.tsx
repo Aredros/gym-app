@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+import { useRef, useEffect, useState, useContext } from "react";
+import "../../assets/Styles/pages/all-pages.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link, useLocation } from "react-router-dom";
@@ -27,7 +28,7 @@ export const MyExercises = () => {
   }, [location]);
 
   return (
-    <div>
+    <div className="main-columns-divide__main-area">
       <div className="main-exercises">
         <h2>My Routines</h2>
 

@@ -52,19 +52,14 @@ export const ProgressTracker = (props: exerciseIT) => {
   const [lastFourDays, setLastFourDays] = useState<string[]>([]);
 
   useEffect(() => {
-    const currentDate = new Date(); // Get the current date
+    const currentDate = new Date().toLocaleDateString(); // Get the current date
     // Calculate the unique dates from doneActivities for the given routine and exercise, excluding the current day
-    const uniqueDates = Array.from(
-      new Set(
-        doneActivities
-          .filter(
-            (activity) =>
-              activity.routineID === routineID &&
-              activity.date !== currentDate.toLocaleDateString()
-          )
-          .map((activity) => new Date(activity.date))
+    const uniqueDates = doneActivities
+      .filter(
+        (activity) =>
+          activity.routineID === routineID && activity.date !== currentDate
       )
-    );
+      .map((activity) => new Date(activity.date));
 
     const sortedUniqueDates = uniqueDates.sort(
       (date1, date2) => date2.getTime() - date1.getTime()

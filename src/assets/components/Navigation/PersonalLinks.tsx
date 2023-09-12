@@ -6,7 +6,7 @@ function PersonalLinks() {
   return (
     <div
       className="personal-links"
-      style={{ display: "flex", justifyContent: "center", gap: "1rem" }}
+      style={{ display: "flex", justifyContent: "center" }}
     >
       <a href="https://www.linkedin.com/in/jose-david-molina-sosa-webdev/?locale=en_US">
         <FontAwesomeIcon icon={faLinkedin} />

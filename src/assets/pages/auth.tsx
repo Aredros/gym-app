@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-// import { AppContext } from "../../App";
+import React from "react";
+import "../../assets/Styles/pages/all-pages.scss";
 import { auth, googleProvider } from "../../config/firebase";
 import {
   createUserWithEmailAndPassword,
@@ -51,7 +51,7 @@ export const Auth = () => {
 
   return (
     <>
-      <div>
+      <div className="main-columns-divide__main-area">
         <div className="main-exercises">
           <h2>Authentication</h2>
           <button onClick={signAnon}>Use without logging in</button>

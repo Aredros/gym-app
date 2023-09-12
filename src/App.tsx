@@ -4,10 +4,11 @@ import { auth, db } from "./config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import django from "./Djangocircle.png";
+import "./assets/Styles/animations.scss";
 import "./App.css";
 import "./styles.scss";
-import "./assets/Styles/Page-exercise-details.scss";
-import "./assets/Styles/add-form-styles.scss";
+import "./assets/Styles/components/Page-exercise-details.scss";
+import "./assets/Styles/components/add-form-styles.scss";
 import { Navigation } from "./assets/components/Navigation/Navigation";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -16,7 +17,6 @@ import { MyExercises } from "./assets/pages/MyExercises";
 import PersonalLinks from "./assets/components/Navigation/PersonalLinks";
 import { PageExerciseDetails } from "./assets/pages/PageExerciseDetails";
 import { RoutinePage } from "./assets/pages/RoutinePage";
-import DbAndLogOut from "./assets/components/Navigation/DbAndLogOut";
 
 // import addNotification from "react-push-notification";
 
@@ -85,6 +85,7 @@ export const RoutineContext = createContext<GeneralContextFiles | undefined>(
 
 function App() {
   const [loading, setLoading] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); //check if the user is logged in or not
   const [isAuthenticated, setIsAuthenticated] = useState(false); //check if it is an anonymous user or not
   const [exerciseList, setExerciseList] = useState<Exercise[]>([]);
@@ -246,6 +247,10 @@ function App() {
     }
   }, [isLoggedIn]);
 
+  const showMenuFunction = () => {
+    setShowMenu(!showMenu);
+  };
+
   //useEffect used to  check if the user is authenticated or not
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -299,13 +304,19 @@ function App() {
           </div>
         ) : (
           <>
-            <PersonalLinks />
-            <h1>Gym list</h1>
             {isAuthenticated ? (
-              <BrowserRouter basename="/gym-app">
-                <div>
-                  <Navigation />
-
+              <BrowserRouter basename="/gym-app/">
+                <div className="main-columns-divide">
+                  <button
+                    className="nav-menu-responsive"
+                    onClick={showMenuFunction}
+                  >
+                    Menu
+                  </button>
+                  <Navigation
+                    showMenu={showMenu}
+                    showMenuFunction={showMenuFunction}
+                  />
                   <Routes>
                     <Route path="/" element={<MyExercises />} />
                     <Route path="/all-exercises" element={<AllExercises />} />
@@ -318,7 +329,6 @@ function App() {
                       element={<RoutinePage />}
                     />
                   </Routes>
-                  <DbAndLogOut />
                 </div>
               </BrowserRouter>
             ) : (

@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import "../../assets/Styles/pages/all-pages.scss";
+import { useParams, useNavigate } from "react-router-dom";
 import { RoutineContext } from "../../App";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faEdit } from "@fortawesome/free-solid-svg-icons";
@@ -226,7 +227,7 @@ export const PageExerciseDetails = () => {
 
   return (
     <>
-      <div>
+      <div className="main-columns-divide__main-area">
         <div className="main-exercises">
           <div className="PageExerciseDetails-header">
             <FontAwesomeIcon icon={faArrowLeft} onClick={goBack} />
