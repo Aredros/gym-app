@@ -18,6 +18,7 @@ export const RoutineForm = (props: AddExerciseIT) => {
   const { closeModal } = props;
 
   const [routineName, setRoutineName] = React.useState("");
+  const [routineDescription, setRoutineDescription] = React.useState("");
   const [routineImage, setRoutineImage] = React.useState("");
   const [linkImage, setLinkImage] = React.useState("");
 
@@ -27,6 +28,7 @@ export const RoutineForm = (props: AddExerciseIT) => {
     e.preventDefault();
     addRoutine(routineName, linkImage);
     setRoutineName("");
+    setRoutineDescription("");
     setLinkImage("");
     // reset the form
     formRef.current?.reset();
@@ -38,6 +40,7 @@ export const RoutineForm = (props: AddExerciseIT) => {
   const addRoutine = async (routineName: string, routineImage: string) => {
     const newRoutine = {
       routineID: uuidv4(),
+      routineDetails: routineDescription,
       isEditing: false,
       routineName: routineName,
       routineImage: routineImage,
@@ -91,6 +94,11 @@ export const RoutineForm = (props: AddExerciseIT) => {
         value={linkImage}
         placeholder="Image url"
         onChange={(e) => setLinkImage(e.target.value)}
+      />
+      <textarea
+        value={routineDescription}
+        placeholder="Description"
+        onChange={(e) => setRoutineDescription(e.target.value)}
       />
     </form>
   );

@@ -8,7 +8,7 @@ import { ProgressTracker } from "../components/My-list/RoutinePage/ProgressTrack
 import { v4 as uuidv4 } from "uuid";
 import { TitleRoutinePage } from "../components/My-list/RoutinePage/TitlteRoutinePage";
 import { auth, db } from "../../config/firebase";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 interface ITroutineSets {
   allExercisesUniqueID: string;
@@ -42,6 +42,7 @@ interface doneDataDetails {
 export const RoutinePage = () => {
   const {
     myRoutines = [],
+    setMyRoutines = () => {},
     doneActivities = [],
     setDoneActivities = () => {},
     isLoggedIn,
@@ -50,10 +51,15 @@ export const RoutinePage = () => {
   const { routineID } = useParams<{ routineID?: string }>();
 
   const [activeDay, setActiveDay] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   const validRoutineID = routineID ?? "";
   const TheRoutine = myRoutines?.find(
     (routine) => routine.routineID === validRoutineID
+  );
+
+  const [routineObjectiveText, setRoutineObjectiveText] = useState(
+    TheRoutine?.routineDetails
   );
 
   const startRoutineHandler = () => {
@@ -152,6 +158,35 @@ export const RoutinePage = () => {
     }
   };
 
+  const updateObjective = async () => {
+    const updatedList = myRoutines.map((routine) => {
+      if (routine.routineID === validRoutineID) {
+        return { ...routine, routineDetails: routineObjectiveText || "" };
+      }
+      return routine;
+    });
+    setMyRoutines(updatedList);
+    if (isLoggedIn) {
+      try {
+        const gymCollectionRef = doc(
+          db,
+          "myRoutines",
+          `routine-${validRoutineID}`
+        );
+        // Get the routine document from Firestore
+        const routineDoc = await getDoc(gymCollectionRef);
+        if (routineDoc.exists()) {
+          await updateDoc(gymCollectionRef, {
+            routineDetails: routineObjectiveText,
+          });
+          console.log("Routine Details Updated");
+        }
+      } catch (err) {
+        console.log(`not edited` + err);
+      }
+    }
+  };
+
   // const checkAndUpdateDoneActivities = () => {
   //   if (activeDay === new Date().toLocaleDateString()) {
   //     updateDoneActivities();
@@ -168,6 +203,10 @@ export const RoutinePage = () => {
     // Update localStorage whenever doneActivities change
     localStorage.setItem("localDoneActivities", JSON.stringify(doneActivities));
   }, [doneActivities]);
+  useEffect(() => {
+    // Update localStorage whenever doneActivities change
+    localStorage.setItem("myRoutines", JSON.stringify(myRoutines));
+  }, [myRoutines]);
 
   return (
     <div className="main-columns-divide__main-area">
@@ -181,6 +220,47 @@ export const RoutinePage = () => {
               If the routine has not been saved, then it wont be shown on past
               days
             </p>
+            {isEditing ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                {" "}
+                <textarea
+                  value={routineObjectiveText}
+                  onChange={(e) => {
+                    if (TheRoutine) {
+                      setRoutineObjectiveText(e.target.value);
+                    }
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    updateObjective();
+                    setIsEditing(!isEditing);
+                  }}
+                >
+                  Save Routine Details
+                </button>
+              </div>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "column",
+                }}
+              >
+                {" "}
+                <p>{TheRoutine?.routineDetails}</p>{" "}
+                <button onClick={() => setIsEditing(!isEditing)}>
+                  Edit Routine Details
+                </button>
+              </div>
+            )}
           </div>
 
           <ul className="all-exercises-list">

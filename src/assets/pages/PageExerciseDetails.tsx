@@ -24,6 +24,7 @@ interface AllListExercise {
 
 interface Routines {
   routineID: string;
+  routineDetails: string;
   isEditing: boolean;
   routineName: string;
   routineImage: string;

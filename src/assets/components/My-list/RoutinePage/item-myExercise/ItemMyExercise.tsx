@@ -46,7 +46,7 @@ export const ItemMyExercise = (props: ItemMyExerciseIT) => {
   const { exerciseList = [], myRoutines = [] } =
     useContext(RoutineContext) || {}; //getting the colors from the context
 
-  const { exerciseItem, routineID } = props;
+  const { exerciseItem } = props;
 
   const allSets = exerciseItem.sets.length;
 
