@@ -10,11 +10,9 @@ import "./styles.scss";
 import "./assets/Styles/components/Page-exercise-details.scss";
 import "./assets/Styles/components/add-form-styles.scss";
 import { Navigation } from "./assets/components/Navigation/Navigation";
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AllExercises } from "./assets/pages/AllExercises";
 import { MyExercises } from "./assets/pages/MyExercises";
-import PersonalLinks from "./assets/components/Navigation/PersonalLinks";
 import { PageExerciseDetails } from "./assets/pages/PageExerciseDetails";
 import { RoutinePage } from "./assets/pages/RoutinePage";
 
@@ -64,6 +62,7 @@ interface doneDataDetails {
   id: string;
   doneExerciseID: string;
   routineID: string;
+  routineName: string;
   totalSets: number;
   completedSets: number;
   creatorDoneData: string;

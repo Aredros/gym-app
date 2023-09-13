@@ -43,6 +43,12 @@ body {
       min-height: 90vh;
     }
   }
+  &__navigation {
+    width: 0px;
+    display: flex;
+    position: absolute;
+    height: 100%;
+  }
   //display the nav menu button for phone
   .nav-menu-responsive {
     position: absolute;
@@ -380,6 +386,13 @@ body {
     //display the nav menu button for phone
     .nav-menu-responsive {
       display: none;
+    }
+    &__navigation {
+      display: flex;
+      position: relative;
+      width: auto !important;
+      z-index: 1 !important;
+      height: auto;
     }
   }
 

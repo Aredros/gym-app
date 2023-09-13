@@ -56,27 +56,8 @@
   }
 }
 
-//Animation to hide and appear Navigation
 //
-.main-columns-divide__navigation {
-  width: 0px;
-  display: flex;
-  position: absolute;
-  height: 100%;
-}
-
-.main-columns-divide__main-area {
-}
+//
 
 @media screen and (min-width: 780px) {
-  .main-columns-divide__navigation {
-    display: flex;
-    position: relative;
-    width: auto !important;
-    z-index: 1 !important;
-    height: auto;
-  }
-
-  .main-columns-divide__main-area {
-  }
 }

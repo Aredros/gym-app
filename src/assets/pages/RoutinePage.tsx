@@ -34,6 +34,7 @@ interface doneDataDetails {
   id: string;
   doneExerciseID: string;
   routineID: string;
+  routineName: string;
   totalSets: number;
   completedSets: number;
   creatorDoneData: string;
@@ -91,6 +92,7 @@ export const RoutinePage = () => {
       id: uuidv4(),
       doneExerciseID: exercise.individualMyExerciseID,
       routineID: validRoutineID,
+      routineName: TheRoutine?.routineName || "",
       totalSets: exercise.sets.length,
       completedSets: exercise.sets.filter((set) => set.setCompleted).length,
       creatorDoneData: auth.currentUser?.email || "",

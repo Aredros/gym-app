@@ -70,10 +70,14 @@ export const ProgressTracker = (props: exerciseIT) => {
       date.toLocaleDateString()
     );
 
+    // Create a Set from the array to remove duplicates
+    const uniqueSet = new Set(formattedDates);
+
+    // Convert the Set back to an array if needed
+    const uniqueArray = Array.from(uniqueSet);
+
     // Update the lastFourDays state with the latest dates
-    setLastFourDays(
-      formattedDates.slice(0, Math.min(3, formattedDates.length))
-    );
+    setLastFourDays(uniqueArray.slice(0, Math.min(3, uniqueArray.length)));
   }, [doneActivities]); // Run the effect whenever doneActivities or routineID changes
 
   // Create a map to group activities by date
