@@ -63,13 +63,16 @@ export const RoutinePage = () => {
     TheRoutine?.routineDetails
   );
 
-  const startRoutineHandler = () => {
-    const todayDateString = new Date().toLocaleDateString();
-    console.log("Start Routine Clicked");
-    setActiveDay(todayDateString);
-    updateDoneActivities();
+  const startRoutineHandler = async () => {
+    try {
+      const todayDateString = new Date().toLocaleDateString();
+      console.log("Start Routine Clicked");
+      setActiveDay(todayDateString);
+      updateDoneActivities();
+    } catch (error) {
+      console.log(`error while saving routine` + error);
+    }
   };
-
   //
   const updateExistingActivity = (
     activity: doneDataDetails,
