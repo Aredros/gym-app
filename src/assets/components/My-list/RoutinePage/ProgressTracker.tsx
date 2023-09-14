@@ -164,13 +164,13 @@ export const ProgressTracker = (props: exerciseIT) => {
             </progress>
             <p className="progress-bar-date">{Math.round(data.progress)}%</p>
             <p className="progress-bar-date__today">
-              {
-                //Transfor Date to only MONTH and DAY only for Display
-                new Date(data.date).toLocaleDateString(undefined, {
-                  month: "short",
-                  day: "numeric",
-                })
-              }
+              {data.date
+                ? //Transfor Date to only MONTH and DAY only for Display
+                  new Date(data.date).toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                  })
+                : "Invalid-date"}
             </p>
           </div>
         ))
