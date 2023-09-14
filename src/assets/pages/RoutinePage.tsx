@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import { TitleRoutinePage } from "../components/My-list/RoutinePage/TitlteRoutinePage";
 import { auth, db } from "../../config/firebase";
 import { collection, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import moment from "moment";
 
 interface ITroutineSets {
   allExercisesUniqueID: string;
@@ -89,7 +90,7 @@ export const RoutinePage = () => {
     };
   };
   const createNewActivity = (exercise: ITroutineSets) => {
-    const todayDateString = new Date().toLocaleDateString();
+    const todayDateString = moment().format("YYYY-MM-DD");
     return {
       date: todayDateString,
       id: uuidv4(),
@@ -103,7 +104,7 @@ export const RoutinePage = () => {
   };
 
   const updateDoneActivities = async () => {
-    const todayDateString = new Date().toLocaleDateString();
+    const todayDateString = moment().format("YYYY-MM-DD");
 
     // Filter out activities for previous dates
     const currentDayActivities = doneActivities.filter(
@@ -137,11 +138,24 @@ export const RoutinePage = () => {
       return activity;
     });
 
-    const updatedDoneActivities = updatedActivities.filter(
+    let updatedDoneActivities = updatedActivities.filter(
       (activity) => activity !== undefined
     ) as doneDataDetails[]; // Filter out undefined items and cast to the correct type
 
-    TheRoutine?.routineExercises.forEach((exercise) => {
+    // Create a set of exercise IDs for which we already have activities for today
+    const exerciseIDsWithActivities = new Set(
+      updatedDoneActivities
+        .filter(
+          (activity) =>
+            activity.routineID === validRoutineID &&
+            activity.date === todayDateString
+        )
+        .map((activity) => activity.doneExerciseID)
+    );
+
+    // Iterate through routineExercises and create/update activities
+    for (const exercise of TheRoutine?.routineExercises || []) {
+      // Check if there is already an activity for this exercise for today
       const existingActivity = updatedDoneActivities.find(
         (activity) =>
           activity?.doneExerciseID === exercise.individualMyExerciseID &&
@@ -149,31 +163,46 @@ export const RoutinePage = () => {
       );
 
       if (!existingActivity) {
+        // Create a new activity if it doesn't exist
         updatedDoneActivities.push(createNewActivity(exercise));
-      }
-    });
+      } else {
+        // Update the existing activity if it exists
+        const updatedActivity = updateExistingActivity(
+          existingActivity,
+          exercise
+        );
 
-    // Here, we create a new array with the original dates preserved
-    const activitiesToUpdateInFirebase = doneActivities.map((activity) => {
-      const updatedActivity = updatedDoneActivities.find(
-        (updated) => updated?.id === activity.id
+        // Replace the existing activity in the array with the updated one
+        const index = updatedDoneActivities.findIndex(
+          (activity) => activity.id === updatedActivity.id
+        );
+
+        if (index !== -1) {
+          updatedDoneActivities[index] = updatedActivity;
+        }
+      }
+
+      // Add the exercise's ID to the set of exercise IDs with activities
+      exerciseIDsWithActivities.add(exercise.individualMyExerciseID);
+    }
+
+    // Remove activities for exercises that are no longer part of the routine
+    updatedDoneActivities = updatedDoneActivities.filter((activity) => {
+      return (
+        activity.routineID === validRoutineID &&
+        (activity.date !== todayDateString ||
+          exerciseIDsWithActivities.has(activity.doneExerciseID))
       );
-
-      if (updatedActivity) {
-        return updatedActivity;
-      }
-
-      return activity;
     });
 
-    setDoneActivities(activitiesToUpdateInFirebase);
+    setDoneActivities(updatedDoneActivities);
 
     if (isLoggedIn) {
       try {
         // Create a new Firestore collection reference
         const gymCollectionRef = collection(db, "doneActivities");
 
-        for (const activity of activitiesToUpdateInFirebase) {
+        for (const activity of updatedDoneActivities) {
           // Construct the document ID with the desired format
           const documentId = `doneData-${activity?.doneExerciseID}`;
 

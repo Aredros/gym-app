@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { RoutineContext } from "../../../../App";
+import moment from "moment";
 
 interface exerciseIT {
   routineID: string;
@@ -52,14 +53,14 @@ export const ProgressTracker = (props: exerciseIT) => {
   const [lastFourDays, setLastFourDays] = useState<string[]>([]);
 
   useEffect(() => {
-    const currentDate = new Date().toLocaleDateString(); // Get the current date
+    const currentDate = moment().format("YYYY-MM-DD"); // Get the current date
     // Calculate the unique dates from doneActivities for the given routine and exercise, excluding the current day
     const uniqueDates = doneActivities
       .filter(
         (activity) =>
           activity.routineID === routineID && activity.date !== currentDate
       )
-      .map((activity) => new Date(activity.date));
+      .map((activity) => moment(activity.date, "YYYY-MM-DD").toDate());
 
     const sortedUniqueDates = uniqueDates.sort(
       (date1, date2) => date2.getTime() - date1.getTime()
@@ -165,11 +166,7 @@ export const ProgressTracker = (props: exerciseIT) => {
             <p className="progress-bar-date">{Math.round(data.progress)}%</p>
             <p className="progress-bar-date__today">
               {data.date
-                ? //Transfor Date to only MONTH and DAY only for Display
-                  new Date(data.date).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })
+                ? moment(data.date).format("YYYY-MM-DD")
                 : "Invalid-date"}
             </p>
           </div>
