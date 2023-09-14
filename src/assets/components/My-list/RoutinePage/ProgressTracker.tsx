@@ -166,7 +166,7 @@ export const ProgressTracker = (props: exerciseIT) => {
             <p className="progress-bar-date__today">
               {data.date
                 ? //Transfor Date to only MONTH and DAY only for Display
-                  new Date(data.date).toLocaleDateString("en-GB", {
+                  new Date(data.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                   })

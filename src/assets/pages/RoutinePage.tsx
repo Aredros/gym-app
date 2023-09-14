@@ -51,8 +51,10 @@ export const RoutinePage = () => {
 
   const { routineID } = useParams<{ routineID?: string }>();
 
-  const [activeDay, setActiveDay] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [updatedDoneActivitiesState, setUpdatedDoneActivitiesState] = useState<
+    doneDataDetails[]
+  >([]);
 
   const validRoutineID = routineID ?? "";
   const TheRoutine = myRoutines?.find(
@@ -65,9 +67,7 @@ export const RoutinePage = () => {
 
   const startRoutineHandler = async () => {
     try {
-      const todayDateString = new Date().toLocaleDateString();
       console.log("Start Routine Clicked");
-      setActiveDay(todayDateString);
       updateDoneActivities();
     } catch (error) {
       console.log(`error while saving routine` + error);
@@ -105,32 +105,47 @@ export const RoutinePage = () => {
   const updateDoneActivities = async () => {
     const todayDateString = new Date().toLocaleDateString();
 
-    const updatedDoneActivities: doneDataDetails[] = doneActivities.map(
-      (activity) => {
-        if (activity.date !== todayDateString) {
-          return activity;
-        }
-        const matchingExercise = TheRoutine?.routineExercises.find(
-          (exercise) =>
-            exercise.individualMyExerciseID === activity.doneExerciseID
-        );
-        if (
-          matchingExercise &&
-          activity.routineID === validRoutineID &&
-          activity.date === todayDateString
-        ) {
-          return updateExistingActivity(activity, matchingExercise);
-        }
-
-        return activity;
-      }
+    // Filter out activities for previous dates
+    const currentDayActivities = doneActivities.filter(
+      (activity) => activity.date === todayDateString
     );
+
+    // Update only the activities for the current day
+    const updatedCurrentDayActivities = currentDayActivities.map((activity) => {
+      const matchingExercise = TheRoutine?.routineExercises.find(
+        (exercise) =>
+          exercise.individualMyExerciseID === activity.doneExerciseID
+      );
+      if (
+        matchingExercise &&
+        activity.routineID === validRoutineID &&
+        activity.date === todayDateString
+      ) {
+        return updateExistingActivity(activity, matchingExercise);
+      }
+
+      return activity;
+    });
+
+    // Combine the updated current day activities with activities from previous days
+    const updatedActivities = doneActivities.map((activity) => {
+      if (activity.date === todayDateString) {
+        return updatedCurrentDayActivities.find(
+          (updatedActivity) => updatedActivity?.id === activity.id
+        );
+      }
+      return activity;
+    });
+
+    const updatedDoneActivities = updatedActivities.filter(
+      (activity) => activity !== undefined
+    ) as doneDataDetails[]; // Filter out undefined items and cast to the correct type
 
     TheRoutine?.routineExercises.forEach((exercise) => {
       const existingActivity = updatedDoneActivities.find(
         (activity) =>
-          activity.doneExerciseID === exercise.individualMyExerciseID &&
-          activity.date === todayDateString
+          activity?.doneExerciseID === exercise.individualMyExerciseID &&
+          activity?.date === todayDateString
       );
 
       if (!existingActivity) {
@@ -138,16 +153,29 @@ export const RoutinePage = () => {
       }
     });
 
-    setDoneActivities(updatedDoneActivities);
+    // Here, we create a new array with the original dates preserved
+    const activitiesToUpdateInFirebase = doneActivities.map((activity) => {
+      const updatedActivity = updatedDoneActivities.find(
+        (updated) => updated?.id === activity.id
+      );
+
+      if (updatedActivity) {
+        return updatedActivity;
+      }
+
+      return activity;
+    });
+
+    setDoneActivities(activitiesToUpdateInFirebase);
 
     if (isLoggedIn) {
       try {
         // Create a new Firestore collection reference
         const gymCollectionRef = collection(db, "doneActivities");
 
-        for (const activity of updatedDoneActivities) {
+        for (const activity of activitiesToUpdateInFirebase) {
           // Construct the document ID with the desired format
-          const documentId = `doneData-${activity.doneExerciseID}`;
+          const documentId = `doneData-${activity?.doneExerciseID}`;
 
           // Create a reference to the document
           const exerciseDocRef = doc(gymCollectionRef, documentId);
@@ -191,18 +219,6 @@ export const RoutinePage = () => {
       }
     }
   };
-
-  // const checkAndUpdateDoneActivities = () => {
-  //   if (activeDay === new Date().toLocaleDateString()) {
-  //     updateDoneActivities();
-  //   }
-  //   requestAnimationFrame(checkAndUpdateDoneActivities);
-  // };
-  //
-
-  // useEffect(() => {
-  //   checkAndUpdateDoneActivities();
-  // }, [doneActivities, activeDay]);
 
   useEffect(() => {
     // Update localStorage whenever doneActivities change
